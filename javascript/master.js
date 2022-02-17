@@ -1,3 +1,4 @@
+import { printX } from "./player.js";
 
 let img;
 
@@ -18,5 +19,11 @@ function draw() {
 // makes it possible to resize the window properly
 function windowResized() {
 	resizeCanvas(windowWidth, windowHeight);
-
 }
+
+// NOTE: p5 wants us to set the window stuff manually because this is a module file
+// it is a module file so that we can import other module files
+window.setup = setup;
+window.draw = draw;
+window.preload = preload;
+window.windowResized = windowResized;
