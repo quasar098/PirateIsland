@@ -12,7 +12,10 @@ function setup() {
 
 function draw() {
 	clear();
-	circle(windowWidth/2, windowHeight/2, 50);
+	image(localPlayer.image, 0, 0);
+}
+function keyPressed() {
+	localPlayer.image = "jump"
 }
 
 // makes it possible to resize the window properly
@@ -26,3 +29,4 @@ window.setup = setup;
 window.draw = draw;
 window.preload = preload;
 window.windowResized = windowResized;
+window.keyPressed = keyPressed;
