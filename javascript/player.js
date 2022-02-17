@@ -1,3 +1,4 @@
+import { Rectangle } from "./rectangle.js";
 
 
 export class Player {
@@ -10,6 +11,8 @@ export class Player {
             frame: 0,
             state: "idle"
         }
+        this.dx = 0;
+        this.dy = 1;
 
         // load up the images
         let image_states = {
@@ -27,8 +30,29 @@ export class Player {
             this.images[state] = images;
         }
 
-        // these vars will probably get changed explicitly during the game
+        // private game settings
         this.max_speed = 7;
+        this.gravity = 0.5;
+    }
+
+    get rect() {
+        this.rect = new Rectangle(this.x, this.y, 100, 60);
+    }
+
+    draw() {
+        image(this.image, this.x, this.y);
+        this.dy += this.gravity;
+        this.move(this.dx, this.dy, []);
+    }
+
+    move(x, y, hitboxes) {
+        this.x += x;
+        this.y += y;
+        for (var count in hitboxes) {
+            if (hitboxes[count]) {
+
+            }  // TODO: do this
+        }
     }
 
     get image() {  // same as @property (getter) in python

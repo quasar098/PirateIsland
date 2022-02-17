@@ -12,7 +12,7 @@ function setup() {
 
 function draw() {
 	clear();
-	image(localPlayer.image, 0, 0);
+	localPlayer.draw();
 }
 function keyPressed() {
 	localPlayer.image = "jump"
