@@ -1,4 +1,4 @@
-import { printX } from "./player.js";
+import * as player from "./player.js";
 
 let img;
 
