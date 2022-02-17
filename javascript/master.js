@@ -1,9 +1,9 @@
 import * as player from "./player.js";
 
-let img;
+let localPlayer;
 
 function preload() {
-	img = loadImage('javascript/images/character/idle.png');
+	localPlayer = new player.Player(43, 232);
 }
 
 function setup() {
@@ -13,7 +13,6 @@ function setup() {
 function draw() {
 	clear();
 	circle(windowWidth/2, windowHeight/2, 50);
-	image(img, 0, 0);
 }
 
 // makes it possible to resize the window properly
