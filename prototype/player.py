@@ -158,9 +158,10 @@ class Player:
                 keys = pygame.key.get_pressed()
                 if self.dashes_left > 0:
                     if (keys[pygame.K_d], keys[pygame.K_a], keys[pygame.K_s], keys[pygame.K_w]).__contains__(True):
-                        self.frames_since_dash = 0
-                        self.dashes_left -= 1
-                        self.dash_direction = keys[pygame.K_d]-keys[pygame.K_a], keys[pygame.K_s]-keys[pygame.K_w]
+                        if not self.grounded:
+                            self.frames_since_dash = 0
+                            self.dashes_left -= 1
+                            self.dash_direction = keys[pygame.K_d]-keys[pygame.K_a], keys[pygame.K_s]-keys[pygame.K_w]
 
     def get_rect(self):
         rect = self.anim_image.get_rect(midbottom=(self.x, self.y))

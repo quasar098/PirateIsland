@@ -1,4 +1,4 @@
-from prototype.player import *
+from player import *
 import pygame
 
 pygame.init()
