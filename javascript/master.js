@@ -1,6 +1,7 @@
 import * as player from "./player.js";
 
 let localPlayer;
+const framerate = 60;
 
 function preload() {
 	localPlayer = new player.Player(43, 232);
@@ -8,6 +9,7 @@ function preload() {
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
+	frameRate(framerate);
 }
 
 function draw() {
