@@ -1,28 +1,35 @@
 import * as player from "./player.js";
+import { Rectangle } from "./rectangle.js";
 
 let localPlayer;
 const framerate = 60;
+const jumpKeys = ["ArrowUp", "KeyW", "Space"];
 
 function preload() {
 	localPlayer = new player.Player(43, 232);
 }
 
 function setup() {
-	createCanvas(windowWidth, windowHeight);
+	createCanvas(1200, 700);
 	frameRate(framerate);
 }
 
 function draw() {
 	clear();
+	localPlayer.hitbox.draw();
 	localPlayer.draw();
 }
-function keyPressed() {
-	localPlayer.image = "jump"
+function keyPressed(e) {
+	// TODO: change this so that it uses the localplayer move function if it is not
+	// existing then making it now!11!11
+	if (jumpKeys.includes(e.code)) {
+		localPlayer.dy = -20;
+	}
 }
 
 // makes it possible to resize the window properly
 function windowResized() {
-	resizeCanvas(windowWidth, windowHeight);
+	resizeCanvas(1200, 700);
 }
 
 // NOTE: p5 wants us to set the window stuff manually because this is a module file
