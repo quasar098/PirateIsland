@@ -15,7 +15,6 @@ function setup() {
 
 function draw() {
 	clear();
-	localPlayer.hitbox.draw();
 	localPlayer.draw();
 }
 function keyPressed(e) {

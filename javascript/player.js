@@ -23,6 +23,7 @@ export class Player {
         this.facing_right = true;
         this.dashes_left = 0;
         this.dash_timer = 0;
+        this.anim_speed = 0.04;
 
         // load up the images
         let image_states = {
@@ -57,42 +58,42 @@ export class Player {
         return new Rectangle(this.x, this.y, 100, 60);
     }
 
-    dashDirection() {
-        let direction = [0, 0];
-        for (var upKey in upKeys) {
-            if (keyIsDown(upKeys[upKey])) {
-                direction[1] -= 1;
-                break;
-            }
-        }
-        for (var downKey in downKeys) {
-            if (keyIsDown(downKeys[downKey])) {
-                direction[1] += 1;
-                break;
-            }
-        }
-        for (var rightKey in rightKeys) {
-            if (keyIsDown(rightKeys[rightKey])) {
-                direction[0] += 1;
-                break;
-            }
-        }
-        for (var leftKey in leftKeys) {
-            if (keyIsDown(leftKeys[leftKey])) {
-                direction[0] -= 1;
-                break;
-            }
-        }
-        return direction;
-    }
-
     jump(event) {
+        function dashDirection() {
+            let direction = [0, 0];
+            for (var upKey in upKeys) {
+                if (keyIsDown(upKeys[upKey])) {
+                    direction[1] -= 1;
+                    break;
+                }
+            }
+            for (var downKey in downKeys) {
+                if (keyIsDown(downKeys[downKey])) {
+                    direction[1] += 1;
+                    break;
+                }
+            }
+            for (var rightKey in rightKeys) {
+                if (keyIsDown(rightKeys[rightKey])) {
+                    direction[0] += 1;
+                    break;
+                }
+            }
+            for (var leftKey in leftKeys) {
+                if (keyIsDown(leftKeys[leftKey])) {
+                    direction[0] -= 1;
+                    break;
+                }
+            }
+            return direction;
+        }
+
         if (jumpKeys.includes(event.code)) {
     		if (this.grounded) {
     			this.dy = -this.jump_height;
     		} else {
                 if (this.dashes_left > 0) {
-                    let dir = this.dashDirection();
+                    let dir = dashDirection();
                     if (!(dir[0] == 0 && dir[1] == 0)) {
                         this.dashes_left -= 1;
                         this.dash_timer = 60*this.dash_length;
@@ -106,6 +107,7 @@ export class Player {
 
     draw() {
         // clamp dx value
+        this.images.frame += this.dx*this.anim_speed;
         this.dash_timer -= 1;
         if (!this.dashing) {
             if (this.dx > this.max_speed) {
@@ -136,9 +138,14 @@ export class Player {
             this.image = "jump";
         } else if (this.dy < -2) {
             this.image = "fall";
-        } else if (this.grounded){
-            this.image = "idle";
+        } else if (this.grounded) {
+            if (this.dx == 0) {
+                this.image = "idle";
+            } else {
+                this.image = "run";
+            }
         }
+        this.frame
 
         // change flipped
         if (this.dx > 0) {
@@ -193,6 +200,7 @@ export class Player {
                     this.y = rect.y-this.hitbox.h;
                     this.framessincegrounded = 0;
                     this.dashes_left = this.max_dashes;
+                    this.dash_timer = 0;
                 }
                 if (dy < 0) {
                     this.y = rect.y+rect.h;
@@ -207,9 +215,11 @@ export class Player {
             if (rect.colliderect(this.hitbox)) {
                 if (dx > 0) {
                     this.x = rect.x-70;
+                    this.dash_timer = 0;
                 }
                 if (dx < 0) {
                     this.x = rect.x+rect.w-30; // todo fix this
+                    this.dash_timer = 0;
                 }
                 this.dx = 0;
                 break;
@@ -221,7 +231,9 @@ export class Player {
         return new Rectangle(this.rect.x+30, this.rect.y, 40, this.rect.h);
     }
     get image() {  // same as @property (getter) in python
-        return this.images[this.images.state][this.images.frame];
+        let state = this.images.state + "";
+        let frame_ = int(this.images.frame);
+        return this.images[state][frame_ % this.images[state].length];
     }
     set image(val) {  // same as @image.setter in python
         this.images.state = val;
