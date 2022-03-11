@@ -5,7 +5,7 @@ let localPlayer;
 const framerate = 60;
 
 function preload() {
-	localPlayer = new player.Player(43, 232);
+	localPlayer = new player.Player(200, 200);
 }
 
 function setup() {
@@ -15,7 +15,7 @@ function setup() {
 
 function draw() {
 	clear();
-	localPlayer.draw();
+	localPlayer.draw([new Rectangle(0, 600, 1200, 100), new Rectangle(0, 0, 100, 600), new Rectangle(1100, 0, 100, 600)]);
 }
 function keyPressed(e) {
 	// TODO: change this so that it uses the localplayer move function if it is not

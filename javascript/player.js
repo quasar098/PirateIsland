@@ -105,7 +105,7 @@ export class Player {
     	}
     }
 
-    draw() {
+    draw(hitboxes) {
         // clamp dx value
         this.images.frame += Math.abs(this.dx*this.anim_speed);
         this.dash_timer -= 1;
@@ -129,9 +129,11 @@ export class Player {
         if (!this.dashing) {
             this.dy += this.gravity;
         }
-        this.move(this.dx, this.dy, [new Rectangle(0, 500, 1200, 100), new Rectangle(100, 400, 100, 100)]);
-        rect(0, 500, 1200, 100);
-        rect(100, 400, 100, 100);
+        this.move(this.dx, this.dy, hitboxes);
+        for (var hitbox in hitboxes) {
+            hitbox = hitboxes[hitbox];
+            rect(hitbox.x, hitbox.y, hitbox.w, hitbox.h);
+        }
 
         // change anims
         if (this.dy > 2) {
