@@ -118,7 +118,7 @@ export class Player {
         }
 
         push();
-        translate(this.x, this.y);
+        translate(550, this.y);
         if (!this.facing_right) {
             scale(-1, 1);
             image(this.image, -100, 0);

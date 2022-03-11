@@ -13,7 +13,7 @@ export class Tile {
     get rect() {
         return new Rectangle(this.x*100, this.y*100, 100, 100);
     }
-    draw() {
-        image(this.image, this.x*100, this.y*100);
+    draw(localPlayer) {
+        image(this.image, this.x*100-localPlayer.x+550, this.y*100);
     }
 }
