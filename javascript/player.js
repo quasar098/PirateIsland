@@ -129,8 +129,8 @@ export class Player {
         if (!this.dashing) {
             this.dy += this.gravity;
         }
-        this.move(this.dx, this.dy, [new Rectangle(0, 500, 600, 100), new Rectangle(100, 400, 100, 100)]);
-        rect(0, 500, 600, 100);
+        this.move(this.dx, this.dy, [new Rectangle(0, 500, 1200, 100), new Rectangle(100, 400, 100, 100)]);
+        rect(0, 500, 1200, 100);
         rect(100, 400, 100, 100);
 
         // change anims
@@ -185,7 +185,7 @@ export class Player {
         }
     }
     get grounded() {
-        return (this.framessincegrounded < 10);
+        return (this.framessincegrounded == 0);
     }
     move(dx, dy, hitboxes) {
         let rect;
