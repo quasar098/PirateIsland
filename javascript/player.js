@@ -45,9 +45,9 @@ export class Player {
         this.max_speed = 12;
         this.gravity = 0.75;
         this.jump_height = 16;
-        this.max_dashes = 2;
-        this.dash_length = 0.2;
-        this.dash_speed = 13;
+        this.max_dashes = 1;
+        this.dash_length = 0.15;
+        this.dash_speed = 16;
     }
 
     get dashing() {
@@ -105,8 +105,8 @@ export class Player {
     	}
     }
 
-    draw() {
-        // clamp dx value
+    draw(hitboxes) {
+        this.framessincegrounded += 1;
         this.images.frame += Math.abs(this.dx*this.anim_speed);
         this.dash_timer -= 1;
         if (!this.dashing) {
@@ -129,9 +129,10 @@ export class Player {
         if (!this.dashing) {
             this.dy += this.gravity;
         }
-        this.move(this.dx, this.dy, [new Rectangle(0, 500, 1200, 100), new Rectangle(100, 400, 100, 100)]);
-        rect(0, 500, 1200, 100);
-        rect(100, 400, 100, 100);
+        this.move(this.dx, this.dy, hitboxes);
+        for (var hitbox in hitboxes) {
+            hitbox = hitboxes[hitbox];
+        }
 
         // change anims
         if (this.dy > 2) {
@@ -189,8 +190,6 @@ export class Player {
     }
     move(dx, dy, hitboxes) {
         let rect;
-
-        this.framessincegrounded += 1;
 
         this.y += dy;
         for (var count in hitboxes) {
