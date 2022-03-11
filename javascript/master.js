@@ -3,7 +3,6 @@ import { Rectangle } from "./rectangle.js";
 
 let localPlayer;
 const framerate = 60;
-const jumpKeys = ["ArrowUp", "KeyW", "Space"];
 
 function preload() {
 	localPlayer = new player.Player(43, 232);
@@ -16,15 +15,12 @@ function setup() {
 
 function draw() {
 	clear();
-	localPlayer.hitbox.draw();
 	localPlayer.draw();
 }
 function keyPressed(e) {
 	// TODO: change this so that it uses the localplayer move function if it is not
 	// existing then making it now!11!11
-	if (jumpKeys.includes(e.code)) {
-		localPlayer.dy = -20;
-	}
+	localPlayer.jump(e);
 }
 
 // makes it possible to resize the window properly

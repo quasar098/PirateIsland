@@ -24,21 +24,24 @@ export class Rectangle {
         rect(this.x, this.y, this.w, this.h);
     }
     colliderect(rectangle) {
-        for (var point in rectangle.points) {
-            if (this.collidepoint(rectangle.points[point][0], rectangle.points[point][1])) {
-                return true;
-            }
+        let a = this;
+        let b = rectangle;
+
+        // copied pseudocode from _pg_do_rects_intersect function
+        // https://github.com/pygame/pygame/blob/main/src_c/rect.c
+        if (a.w == 0 || a.h == 0 || b.w == 0 || b.h == 0) {
+            return false;
         }
-        for (var point in this.points) {
-            if (rectangle.collidepoint(this.points[point][0], this.points[point][0])) {
-                return true;
-            }
-        }
-        return false;
+
+        // how the hell does this work idk but it works ????
+        return (Math.min(a.x, a.x+a.w) < Math.max(b.x, b.x+b.w) &&
+                Math.min(a.y, a.y+a.h) < Math.max(b.y, b.y+b.h) &&
+                Math.max(a.x, a.x+a.w) > Math.min(b.x, b.x+b.w) &&
+                Math.max(a.y, a.y+a.h) > Math.min(b.y, b.y+b.h));
     }
     collidepoint(x, y) {
-        if (x >= this.x && this.x+this.w >= x) {
-            if (y >= this.y && this.y+this.h >= y) {
+        if (x > this.x && this.x+this.w > x) {
+            if (y > this.y && this.y+this.h > y) {
                 return true;
             }
         }
