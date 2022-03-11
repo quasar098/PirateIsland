@@ -1,10 +1,7 @@
 # Pirate Island
 
-it's a prototype for the real thing
-which will be made using p5 and js
+Notice: there is now a gpl3 license so no closed source distros!
 ---
-There is no license for the prototype<br>
-Swiper no swiping!!!
 
 ## Notes for developing
 
