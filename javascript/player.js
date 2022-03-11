@@ -107,7 +107,7 @@ export class Player {
 
     draw() {
         // clamp dx value
-        this.images.frame += this.dx*this.anim_speed;
+        this.images.frame += Math.abs(this.dx*this.anim_speed);
         this.dash_timer -= 1;
         if (!this.dashing) {
             if (this.dx > this.max_speed) {
@@ -233,7 +233,7 @@ export class Player {
     get image() {  // same as @property (getter) in python
         let state = this.images.state + "";
         let frame_ = int(this.images.frame);
-        return this.images[state][frame_ % this.images[state].length];
+        return this.images[state][int(frame_) % this.images[state].length];
     }
     set image(val) {  // same as @image.setter in python
         this.images.state = val;
