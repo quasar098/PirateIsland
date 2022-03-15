@@ -8,35 +8,38 @@ const framerate = 60;
 
 function preload() {
 	localPlayer = new player.Player(200, 200);
-	world.push(new Tile(1, 6, 1));
-	world.push(new Tile(2, 6, 2));
-	world.push(new Tile(3, 6, 2));
-	world.push(new Tile(4, 6, 2));
-	world.push(new Tile(5, 6, 2));
-	world.push(new Tile(6, 6, 2));
-	world.push(new Tile(7, 6, 2));
-	world.push(new Tile(8, 6, 2));
-	world.push(new Tile(9, 6, 2));
-	world.push(new Tile(10, 6, 2));
-	world.push(new Tile(11, 6, 2));
-	world.push(new Tile(12, 6, 2));
-	world.push(new Tile(13, 6, 2));
-	world.push(new Tile(14, 6, 2));
-	world.push(new Tile(15, 6, 3));
 
-	world.push(new Tile(0, 3, 1));
-	world.push(new Tile(1, 3, 2));
-	world.push(new Tile(2, 3, 3));
-	world.push(new Tile(0, 4, 7));
-	world.push(new Tile(1, 4, 8));
-	world.push(new Tile(2, 4, 9));
+	// ground
+	world.push(new Tile(1, 8, 1));
+	world.push(new Tile(2, 8, 2));
+	world.push(new Tile(3, 8, 2));
+	world.push(new Tile(4, 8, 2));
+	world.push(new Tile(5, 8, 2));
+	world.push(new Tile(6, 8, 2));
+	world.push(new Tile(7, 8, 2));
+	world.push(new Tile(8, 8, 2));
+	world.push(new Tile(9, 8, 2));
+	world.push(new Tile(10, 8, 2));
+	world.push(new Tile(11, 8, 2));
+	world.push(new Tile(12, 8, 2));
+	world.push(new Tile(13, 8, 2));
+	world.push(new Tile(14, 8, 3));
 
-	world.push(new Tile(14, 3, 1));
-	world.push(new Tile(15, 3, 2));
-	world.push(new Tile(16, 3, 3));
-	world.push(new Tile(14, 4, 7));
-	world.push(new Tile(15, 4, 8));
-	world.push(new Tile(16, 4, 9));
+	// ground part 2
+	world.push(new Tile(1, 9, 4));
+	world.push(new Tile(2, 9, 5));
+	world.push(new Tile(3, 9, 5));
+	world.push(new Tile(4, 9, 5));
+	world.push(new Tile(5, 9, 5));
+	world.push(new Tile(6, 9, 5));
+	world.push(new Tile(7, 9, 5));
+	world.push(new Tile(8, 9, 5));
+	world.push(new Tile(9, 9, 5));
+	world.push(new Tile(10, 9, 5));
+	world.push(new Tile(11, 9, 5));
+	world.push(new Tile(12, 9, 5));
+	world.push(new Tile(13, 9, 5));
+	world.push(new Tile(14, 9, 6));
 }
 
 function setup() {
@@ -46,6 +49,7 @@ function setup() {
 
 function draw() {
 	clear();
+	scale(0.75, 0.75); // camera zoom
 	localPlayer.draw(worldRectangles());
 	for (var _ in world) {
 		world[_].draw(localPlayer);
