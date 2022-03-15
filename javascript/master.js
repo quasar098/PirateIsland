@@ -8,6 +8,7 @@ const framerate = 60;
 
 function preload() {
 	localPlayer = new player.Player(200, 200);
+	player.preloadplayerjs();
 
 	// ground
 	world.push(new Tile(1, 8, 1));
@@ -49,6 +50,7 @@ function setup() {
 
 function draw() {
 	clear();
+	background(81, 187, 254);
 	scale(0.75, 0.75); // camera zoom
 	localPlayer.draw(worldRectangles());
 	for (var _ in world) {
