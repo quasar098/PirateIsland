@@ -56,8 +56,6 @@ function draw() {
 	}
 }
 function keyPressed(e) {
-	// TODO: change this so that it uses the localplayer move function if it is not
-	// existing then making it now!11!11
 	localPlayer.jump(e);
 }
 

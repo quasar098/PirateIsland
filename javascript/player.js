@@ -217,7 +217,7 @@ export class Player {
                     this.dash_timer = 0;
                 }
                 if (dx < 0) {
-                    this.x = rect.x+rect.w-30; // todo fix this
+                    this.x = rect.x+rect.w-30;
                     this.dash_timer = 0;
                 }
                 this.dx = 0;
