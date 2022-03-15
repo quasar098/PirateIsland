@@ -259,7 +259,7 @@ export class Player {
                     this.framessincegrounded = 0;
                     this.dashes_left = this.max_dashes;
                     this.dash_timer = 0;
-                    if (this.dy > 2) {
+                    if (this.dy > this.gravity) {
                         this.dust_particles.push(new DustParticle(this.rect.midbottom, "land"));
                     }
                 }
