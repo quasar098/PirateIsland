@@ -8,12 +8,39 @@ const framerate = 60;
 
 function preload() {
 	localPlayer = new player.Player(200, 200);
-	world.push(new Tile(1, 6, 1));
-	world.push(new Tile(2, 6, 2));
-	world.push(new Tile(3, 6, 2));
-	world.push(new Tile(4, 6, 2));
-	world.push(new Tile(5, 6, 2));
-	world.push(new Tile(6, 6, 3));
+	player.preloadplayerjs();
+
+	// ground
+	world.push(new Tile(1, 8, 1));
+	world.push(new Tile(2, 8, 2));
+	world.push(new Tile(3, 8, 2));
+	world.push(new Tile(4, 8, 2));
+	world.push(new Tile(5, 8, 2));
+	world.push(new Tile(6, 8, 2));
+	world.push(new Tile(7, 8, 2));
+	world.push(new Tile(8, 8, 2));
+	world.push(new Tile(9, 8, 2));
+	world.push(new Tile(10, 8, 2));
+	world.push(new Tile(11, 8, 2));
+	world.push(new Tile(12, 8, 2));
+	world.push(new Tile(13, 8, 2));
+	world.push(new Tile(14, 8, 3));
+
+	// ground part 2
+	world.push(new Tile(1, 9, 4));
+	world.push(new Tile(2, 9, 5));
+	world.push(new Tile(3, 9, 5));
+	world.push(new Tile(4, 9, 5));
+	world.push(new Tile(5, 9, 5));
+	world.push(new Tile(6, 9, 5));
+	world.push(new Tile(7, 9, 5));
+	world.push(new Tile(8, 9, 5));
+	world.push(new Tile(9, 9, 5));
+	world.push(new Tile(10, 9, 5));
+	world.push(new Tile(11, 9, 5));
+	world.push(new Tile(12, 9, 5));
+	world.push(new Tile(13, 9, 5));
+	world.push(new Tile(14, 9, 6));
 }
 
 function setup() {
@@ -23,14 +50,14 @@ function setup() {
 
 function draw() {
 	clear();
+	background(81, 187, 254);
+	scale(0.75, 0.75); // camera zoom
 	localPlayer.draw(worldRectangles());
 	for (var _ in world) {
-		world[_].draw();
+		world[_].draw(localPlayer);
 	}
 }
 function keyPressed(e) {
-	// TODO: change this so that it uses the localplayer move function if it is not
-	// existing then making it now!11!11
 	localPlayer.jump(e);
 }
 

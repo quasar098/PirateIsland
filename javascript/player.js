@@ -6,6 +6,48 @@ const upKeys = [38, 87];
 const downKeys = [40, 83];
 
 const jumpKeys = ["Space"];
+let dust_images = new Map();
+
+export function preloadplayerjs() {
+    function ldi(..._) {
+        var stuff = [];
+        _.forEach((imgload, count) => {
+            stuff.push(loadImage("./javascript/images/dust/" + imgload));
+        });
+        return stuff;
+    }
+    dust_images.set("jump", ldi("jump_1.png", "jump_2.png", "jump_3.png", "jump_4.png", "jump_5.png"));
+    dust_images.set("land", ldi("land_1.png", "land_2.png", "land_3.png", "land_4.png", "land_5.png"));
+}
+
+class DustParticle {
+    constructor(pos, type) {
+        this.x = pos[0];
+        this.y = pos[1];
+        this.type = type;
+        this.frame = 0;
+    }
+    draw() {
+        if (this.image != undefined) {
+            if (this.type == "jump") {
+                image(this.image, this.x-16, this.y-24);
+            } else if (this.type == "land") {
+                image(this.image, this.x-50, this.y-40);
+            } else {
+                image(this.image, this.x, this.y-10);
+            }
+        }
+        this.frame += 0.5;
+        if (this.frame >= dust_images.get(this.type).length) {
+            return true;
+        }
+        return false;
+    }
+    get image() {
+        return dust_images.get(this.type)[int(this.frame)];
+    }
+}
+
 
 export class Player {
     constructor(x, y) {
@@ -19,11 +61,12 @@ export class Player {
         }
         this.dx = 0;
         this.dy = 1;
-        this.framessincegrounded = 0
+        this.framessincegrounded = 0;
         this.facing_right = true;
         this.dashes_left = 0;
         this.dash_timer = 0;
         this.anim_speed = 0.04;
+        this.dust_particles = [];
 
         // load up the images
         let image_states = {
@@ -91,6 +134,7 @@ export class Player {
         if (jumpKeys.includes(event.code)) {
     		if (this.grounded) {
     			this.dy = -this.jump_height;
+                this.dust_particles.push(new DustParticle(this.rect.midbottom, "jump"));
     		} else {
                 if (this.dashes_left > 0) {
                     let dir = dashDirection();
@@ -116,6 +160,21 @@ export class Player {
                 this.dx = -this.max_speed;
             }
         }
+
+        // draw dust particles
+        if (this.images.state == "run") {
+            if (Math.abs(this.dx) == this.max_speed) {
+            }
+        }
+        var deadlist = []
+        for (var particle in this.dust_particles) {
+            if (this.dust_particles[particle].draw()) {
+                deadlist.push(this.dust_particles[particle]);
+            }
+        }
+        this.dust_particles = this.dust_particles.filter((value, index, arr) => {
+            return !deadlist.includes(value);
+        });
 
         push();
         translate(this.x, this.y);
@@ -200,6 +259,9 @@ export class Player {
                     this.framessincegrounded = 0;
                     this.dashes_left = this.max_dashes;
                     this.dash_timer = 0;
+                    if (this.dy > this.gravity) {
+                        this.dust_particles.push(new DustParticle(this.rect.midbottom, "land"));
+                    }
                 }
                 if (dy < 0) {
                     this.y = rect.y+rect.h;
@@ -217,7 +279,7 @@ export class Player {
                     this.dash_timer = 0;
                 }
                 if (dx < 0) {
-                    this.x = rect.x+rect.w-30; // todo fix this
+                    this.x = rect.x+rect.w-30;
                     this.dash_timer = 0;
                 }
                 this.dx = 0;
