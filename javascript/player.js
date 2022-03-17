@@ -101,6 +101,14 @@ export class Player {
         return new Rectangle(this.x, this.y, 100, 60);
     }
 
+    get attackHitbox() {
+        if (this.facing_right) {
+            return new Rectangle(this.hitbox.x+this.hitbox.w, this.hitbox.y-20, 70, this.hitbox.h+40)
+        } else {
+            return new Rectangle(this.hitbox.x-70, this.hitbox.y-20, 70, this.hitbox.h+40)
+        }
+    }
+
     jump(event) {
         function dashDirection() {
             let direction = [0, 0];
@@ -175,7 +183,7 @@ export class Player {
         this.dust_particles = this.dust_particles.filter((value, index, arr) => {
             return !deadlist.includes(value);
         });
-
+        this.move(this.dx, this.dy, hitboxes);
         push();
         translate(this.x, this.y);
         if (!this.facing_right) {
@@ -188,7 +196,6 @@ export class Player {
         if (!this.dashing) {
             this.dy += this.gravity;
         }
-        this.move(this.dx, this.dy, hitboxes);
         for (var hitbox in hitboxes) {
             hitbox = hitboxes[hitbox];
         }

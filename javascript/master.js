@@ -21,40 +21,40 @@ function preload() {
 	player.preloadplayerjs();
 
 	// ground
-	world.push(new Tile(1, 8, 1));
-	world.push(new Tile(2, 8, 2));
-	world.push(new Tile(3, 8, 2));
-	world.push(new Tile(4, 8, 2));
-	world.push(new Tile(5, 8, 2));
-	world.push(new Tile(6, 8, 2));
-	world.push(new Tile(7, 8, 2));
-	world.push(new Tile(8, 8, 2));
-	world.push(new Tile(9, 8, 2));
-	world.push(new Tile(10, 8, 2));
-	world.push(new Tile(11, 8, 2));
-	world.push(new Tile(12, 8, 2));
-	world.push(new Tile(13, 8, 2));
-	world.push(new Tile(14, 8, 3));
+	world.push(new Tile(1, 6, 1));
+	world.push(new Tile(2, 6, 2));
+	world.push(new Tile(3, 6, 2));
+	world.push(new Tile(4, 6, 2));
+	world.push(new Tile(5, 6, 2));
+	world.push(new Tile(6, 6, 2));
+	world.push(new Tile(7, 6, 2));
+	world.push(new Tile(8, 6, 2));
+	world.push(new Tile(9, 6, 2));
+	world.push(new Tile(10, 6, 2));
+	world.push(new Tile(11, 6, 2));
+	world.push(new Tile(12, 6, 2));
+	world.push(new Tile(13, 6, 2));
+	world.push(new Tile(14, 6, 3));
 
 	// ground part 2
-	world.push(new Tile(1, 9, 4));
-	world.push(new Tile(2, 9, 5));
-	world.push(new Tile(3, 9, 5));
-	world.push(new Tile(4, 9, 5));
-	world.push(new Tile(5, 9, 5));
-	world.push(new Tile(6, 9, 5));
-	world.push(new Tile(7, 9, 5));
-	world.push(new Tile(8, 9, 5));
-	world.push(new Tile(9, 9, 5));
-	world.push(new Tile(10, 9, 5));
-	world.push(new Tile(11, 9, 5));
-	world.push(new Tile(12, 9, 5));
-	world.push(new Tile(13, 9, 5));
-	world.push(new Tile(14, 9, 6));
+	world.push(new Tile(1, 7, 4));
+	world.push(new Tile(2, 7, 5));
+	world.push(new Tile(3, 7, 5));
+	world.push(new Tile(4, 7, 5));
+	world.push(new Tile(5, 7, 5));
+	world.push(new Tile(6, 7, 5));
+	world.push(new Tile(7, 7, 5));
+	world.push(new Tile(8, 7, 5));
+	world.push(new Tile(9, 7, 5));
+	world.push(new Tile(10, 7, 5));
+	world.push(new Tile(11, 7, 5));
+	world.push(new Tile(12, 7, 5));
+	world.push(new Tile(13, 7, 5));
+	world.push(new Tile(14, 7, 6));
 }
 
 function setup() {
-	createCanvas(1200, 700);
+	createCanvas(1200, 600);
 	frameRate(framerate);
 }
 
