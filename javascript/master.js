@@ -5,6 +5,16 @@ import { Tile } from "./tiles.js"
 let localPlayer;
 let world = [];
 const framerate = 60;
+let connIp = "";
+let connPort = 19293;
+
+if (localStorage.getItem("connect-ip") == null) {
+	window.location.href = './main.html';
+} else {
+	connIp = localStorage.getItem("connect-ip");
+	connPort = parseInt(localStorage.getItem("connect-port"));
+	localStorage.removeItem("connect-ip");
+}
 
 function preload() {
 	localPlayer = new player.Player(200, 200);
