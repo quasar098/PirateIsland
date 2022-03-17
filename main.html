@@ -16,7 +16,19 @@
         <h2 class="text">Server IP address</h2>
         <input type="url" name="ip" value="" id="ip-box">
         <h2 class="text">Server Port</h2>
-        <input type="url" name="port" value="19293" id="port-box">
+        <input type="number" name="port" value="19293" id="port-box">
         <button type="button" name="join server" id="play-button">sus</button>
+        <script type="text/javascript">
+            const ipBox = document.getElementById("ip-box");
+            const portBox = document.getElementById('port-box');
+            const joinButton = document.getElementById('play-button');
+            joinButton.addEventListener("click", () => {
+                if (ipBox.value != "" && portBox.value != "") { // TODO: make a bunch of checks here
+                    localStorage.setItem("connect-ip", ipBox.value);
+                    localStorage.setItem("port-ip", ipBox.value);
+                    window.location.replace('./index.html');
+                }
+            });
+        </script>
     </body>
 </html>
