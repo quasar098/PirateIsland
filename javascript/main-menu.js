@@ -7,6 +7,7 @@ joinButton.addEventListener("click", () => {
         localStorage.setItem("port-ip", ipBox.value);
 
         // verify that the server is online and a valid server
+        
 
         window.location.replace('./index.html');
     }

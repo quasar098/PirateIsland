@@ -70,12 +70,6 @@ function draw() {
 function keyPressed(e) {
 	localPlayer.jump(e);
 }
-
-// makes it possible to resize the window properly
-function windowResized() {
-	resizeCanvas(1200, 700);
-}
-
 function worldRectangles() {
 	let rects = [];
 	for (var tile in world) {
@@ -89,5 +83,4 @@ function worldRectangles() {
 window.setup = setup;
 window.draw = draw;
 window.preload = preload;
-window.windowResized = windowResized;
 window.keyPressed = keyPressed;
