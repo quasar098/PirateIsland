@@ -7,6 +7,13 @@ let world = [];
 const framerate = 60;
 let connIp = "";
 let connPort = 19293;
+let currRMB = false;
+let prevRMB = false;
+
+// prevent right click menu
+document.body.addEventListener("contextmenu", (e) => {
+	e.preventDefault();
+});
 
 if (localStorage.getItem("connect-ip") == null) {
 	window.location.href = './main.html';
@@ -66,11 +73,20 @@ function draw() {
 	for (var _ in world) {
 		world[_].draw(localPlayer);
 	}
+
+	// rmb clicked (not pressed)
+	{
+		currRMB = (mouseButton === RIGHT & mouseIsPressed);
+		if (currRMB & !prevRMB) {
+			localPlayer.jump();
+		}
+		prevRMB = (mouseButton === RIGHT & mouseIsPressed);
+	}
 }
 function keyPressed(e) {
 	localPlayer.jump(e);
 }
-function worldRectangles() { 
+function worldRectangles() {
 	let rects = [];
 	for (var tile in world) {
 		rects.push(world[tile].rect);
@@ -84,3 +100,11 @@ window.setup = setup;
 window.draw = draw;
 window.preload = preload;
 window.keyPressed = keyPressed;
+
+function leftClick() {
+	console.log("todo add left clicks be attack (or pressing m/c would work too)");
+}
+
+document.addEventListener("click", (event) => {
+	leftClick();
+});

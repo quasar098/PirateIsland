@@ -110,6 +110,7 @@ export class Player {
     }
 
     jump(event) {
+		if (event == undefined || jumpKeys.includes(event.code)) {
         function dashDirection() {
             let direction = [0, 0];
             for (var upKey in upKeys) {
@@ -139,7 +140,6 @@ export class Player {
             return direction;
         }
 
-        if (jumpKeys.includes(event.code)) {
     		if (this.grounded) {
     			this.dy = -this.jump_height;
                 this.dust_particles.push(new DustParticle(this.rect.midbottom, "jump"));
@@ -154,7 +154,7 @@ export class Player {
                     }
                 }
             }
-    	}
+		}
     }
 
     draw(hitboxes) {
