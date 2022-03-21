@@ -70,7 +70,7 @@ function draw() {
 function keyPressed(e) {
 	localPlayer.jump(e);
 }
-function worldRectangles() {
+function worldRectangles() { 
 	let rects = [];
 	for (var tile in world) {
 		rects.push(world[tile].rect);
