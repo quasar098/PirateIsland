@@ -9,6 +9,7 @@ let connIp = "";
 let connPort = 19293;
 let currRMB = false;
 let prevRMB = false;
+let clientId = Math.random()*100;
 
 // prevent right click menu
 document.body.addEventListener("contextmenu", (e) => {
@@ -126,7 +127,8 @@ function sendServerData(websock) {
 			"position": localPlayer.position,
 			"frame": localPlayer.images.frame,
 			"state": localPlayer.images.state,
-			"facing-right": localPlayer.facing_right,
+			"facing_right": localPlayer.facing_right*1,
+			"clientId": clientId
 		}
 	));
 }
@@ -148,11 +150,12 @@ conn.onmessage = ((m) => {
 		if (allPlayers.hasOwnProperty(playerId)) { // just updating player object
 			setPlayerInfo(allPlayers[playerId], playerData);
 		} else {
-			allPlayers[playerId] = new player.Player(0, 0);
-			setPlayerInfo(allPlayers[playerId], playerData); // can rework this area
+			if (allPlayers[playerId].clientId != clientId) {
+				allPlayers[playerId] = new player.Player(0, 0);
+				setPlayerInfo(allPlayers[playerId], playerData); // can rework this area
+			}
 		}
 	}
-	console.log(allPlayers);
 	sendServerData(conn);
 });
 conn.onerror = (() => {

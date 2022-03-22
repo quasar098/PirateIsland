@@ -197,60 +197,62 @@ export class Player {
             image(this.image, 0, 0);
         }
         pop();
-        if (!this.dashing) {
-            this.dy += this.gravity;
-        }
-        for (var hitbox in hitboxes) {
-            hitbox = hitboxes[hitbox];
-        }
-
-        // change anims
-        if (this.dy > 2) {
-            this.image = "jump";
-        } else if (this.dy < -2) {
-            this.image = "fall";
-        } else if (this.grounded) {
-            if (this.dx == 0) {
-                this.image = "idle";
-            } else {
-                this.image = "run";
+        if (dontjustdraw) {
+            if (!this.dashing) {
+                this.dy += this.gravity;
             }
-        }
-        this.frame
+            for (var hitbox in hitboxes) {
+                hitbox = hitboxes[hitbox];
+            }
 
-        // change flipped
-        if (this.dx > 0) {
-            this.facing_right = true;
-        }
-        if (this.dx < 0)
-        {
-            this.facing_right = false;
-        }
-
-        if (!this.dashing) {
-        // changing dx based on keys
-            let willreturn = 0;
-            for (var rKey in rightKeys) {
-                if (keyIsDown(rightKeys[rKey])) {
-                    willreturn += 1;
+            // change anims
+            if (this.dy > 2) {
+                this.image = "jump";
+            } else if (this.dy < -2) {
+                this.image = "fall";
+            } else if (this.grounded) {
+                if (this.dx == 0) {
+                    this.image = "idle";
+                } else {
+                    this.image = "run";
                 }
             }
-            for (var lKey in leftKeys) {
-                if (keyIsDown(leftKeys[lKey])) {
-                    willreturn -= 1;
-                }
+            this.frame
+
+            // change flipped
+            if (this.dx > 0) {
+                this.facing_right = true;
             }
-            if (willreturn) {
-                this.dx += willreturn;
-                return;
+            if (this.dx < 0)
+            {
+                this.facing_right = false;
             }
 
-            // deceleration if no key pressed
-            for (var i=0; i<2; i++) {
-                if (this.dx > 0) {
-                    this.dx -= this.deceleration;
-                } else if (this.dx < 0) {
-                    this.dx += this.deceleration;
+            if (!this.dashing) {
+            // changing dx based on keys
+                let willreturn = 0;
+                for (var rKey in rightKeys) {
+                    if (keyIsDown(rightKeys[rKey])) {
+                        willreturn += 1;
+                    }
+                }
+                for (var lKey in leftKeys) {
+                    if (keyIsDown(leftKeys[lKey])) {
+                        willreturn -= 1;
+                    }
+                }
+                if (willreturn) {
+                    this.dx += willreturn;
+                    return;
+                }
+
+                // deceleration if no key pressed
+                for (var i=0; i<2; i++) {
+                    if (this.dx > 0) {
+                        this.dx -= this.deceleration;
+                    } else if (this.dx < 0) {
+                        this.dx += this.deceleration;
+                    }
                 }
             }
         }

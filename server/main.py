@@ -18,11 +18,13 @@ def message_received(client, server, message):
 			server.send_message(client, dumps(data));
 	except Exception as error:
 		print(error)
-		data["clients"].pop(client["id"])
+		if client["id"] in data["clients"]:
+			data["clients"].pop(client["id"])
 
 def lost_client(client, server):
 	print(f"a client has disconnected")
-	data["clients"].pop(client["id"])
+	if client["id"] in data["clients"]:
+		data["clients"].pop(client["id"])
 
 server = WebsocketServer(host='127.0.0.1', port=19293)
 print(f"starting the server with ip {server.host} and port {server.port}")
