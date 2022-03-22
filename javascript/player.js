@@ -67,14 +67,12 @@ export class Player {
         this.dash_timer = 0;
         this.anim_speed = 0.04;
         this.dust_particles = [];
-
-        // load up the images
         let image_states = {
             "idle": ["idle.png"],
             "jump": ["jump.png"],
             "fall": ["fall.png"],
             "run": ["run0.png", "run1.png", "run2.png", "run3.png", "run4.png"]
-        }
+        };
         let images;
         for (var state in image_states) {
             images = [];

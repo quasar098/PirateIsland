@@ -33,7 +33,10 @@ function serverIsValid(ip, port) {
 }
 
 joinButton.addEventListener("click", () => {
-    if (ipBox.value != "" && portBox.value != "") {
+    if (portBox.value != "") {
+        if (ipBox.value == "") {
+            ipBox.value = "127.0.0.1";
+        }
         localStorage.setItem("connect-ip", ipBox.value);
         localStorage.setItem("connect-port", portBox.value);
         serverIsValid(ipBox.value, portBox.value)

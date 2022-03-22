@@ -24,8 +24,8 @@ if (localStorage.getItem("connect-ip") == null) {
 }
 
 function preload() {
-	localPlayer = new player.Player(200, 200);
 	player.preloadplayerjs();
+	localPlayer = new player.Player(200, 200);
 
 	// ground
 	world.push(new Tile(1, 6, 1));
@@ -69,12 +69,17 @@ function draw() {
 	clear();
 	background(81, 187, 254);
 	scale(0.75, 0.75); // camera zoom
+
+	// real drawing
 	localPlayer.draw(worldRectangles());
 	for (var _ in world) {
 		world[_].draw(localPlayer);
 	}
+	for (var variable in object) {
 
-	// rmb clicked (not pressed)
+	}
+
+	// rmb clicked testings
 	{
 		currRMB = (mouseButton === RIGHT & mouseIsPressed);
 		if (currRMB & !prevRMB) {
@@ -112,19 +117,42 @@ document.addEventListener("click", (event) => {
 // server stuff
 let conn = new WebSocket("ws://" + connIp + ":" + connPort);
 let serverData;
+let allPlayers = {};
+let createdPlayer;
 
 function sendServerData(websock) {
 	websock.send(JSON.stringify(
-		{"position": localPlayer.position}
-	)); // TODO: actually send something useful
+		{
+			"position": localPlayer.position,
+			"frame": localPlayer.images.frame,
+			"state": localPlayer.images.state,
+			"facing-right": localPlayer.facing_right,
+		}
+	));
 }
 
 conn.onopen = (() => {
 	sendServerData(conn);
 });
 conn.onmessage = ((m) => {
-	serverData = JSON.parse(m.data);
-	console.log(serverData);
+	function setPlayerInfo(playerObject, serverPlayerInfo) {
+		playerObject.images.frame = serverPlayerInfo.frame;
+		playerObject.images.state = serverPlayerInfo.state;
+		playerObject.x = serverPlayerInfo.position[0];
+		playerObject.y = serverPlayerInfo.position[1];
+		playerObject.facing_right = serverPlayerInfo.facing_right;
+	}
+	serverData = (JSON.parse(m.data)).clients;
+	for (let playerId in serverData) {
+    	let playerData = serverData[playerId];
+		if (allPlayers.hasOwnProperty(playerId)) { // just updating player object
+			setPlayerInfo(allPlayers[playerId], playerData);
+		} else {
+			allPlayers[playerId] = new player.Player(0, 0);
+			setPlayerInfo(allPlayers[playerId], playerData); // can rework this area
+		}
+	}
+	console.log(allPlayers);
 	sendServerData(conn);
 });
 conn.onerror = (() => {
