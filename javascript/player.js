@@ -159,33 +159,35 @@ export class Player {
 		}
     }
 
-    draw(hitboxes) {
-        this.framessincegrounded += 1;
-        this.images.frame += Math.abs(this.dx*this.anim_speed);
-        this.dash_timer -= 1;
-        if (!this.dashing) {
-            if (this.dx > this.max_speed) {
-                this.dx = this.max_speed;
-            } else if (this.dx < -this.max_speed) {
-                this.dx = -this.max_speed;
+    draw(hitboxes, dontjustdraw=true) {
+        if (dontjustdraw) {
+            this.framessincegrounded += 1;
+            this.images.frame += Math.abs(this.dx*this.anim_speed);
+            this.dash_timer -= 1;
+            if (!this.dashing) {
+                if (this.dx > this.max_speed) {
+                    this.dx = this.max_speed;
+                } else if (this.dx < -this.max_speed) {
+                    this.dx = -this.max_speed;
+                }
             }
-        }
 
-        // draw dust particles
-        if (this.images.state == "run") {
-            if (Math.abs(this.dx) == this.max_speed) {
+            // draw dust particles
+            if (this.images.state == "run") {
+                if (Math.abs(this.dx) == this.max_speed) {
+                }
             }
-        }
-        var deadlist = []
-        for (var particle in this.dust_particles) {
-            if (this.dust_particles[particle].draw()) {
-                deadlist.push(this.dust_particles[particle]);
+            var deadlist = []
+            for (var particle in this.dust_particles) {
+                if (this.dust_particles[particle].draw()) {
+                    deadlist.push(this.dust_particles[particle]);
+                }
             }
+            this.dust_particles = this.dust_particles.filter((value, index, arr) => {
+                return !deadlist.includes(value);
+            });
+            this.move(this.dx, this.dy, hitboxes);
         }
-        this.dust_particles = this.dust_particles.filter((value, index, arr) => {
-            return !deadlist.includes(value);
-        });
-        this.move(this.dx, this.dy, hitboxes);
         push();
         translate(this.x, this.y);
         if (!this.facing_right) {

@@ -75,8 +75,8 @@ function draw() {
 	for (var _ in world) {
 		world[_].draw(localPlayer);
 	}
-	for (var variable in object) {
-
+	for (var otherPlayer in allPlayers) {
+		allPlayers[otherPlayer].draw([], false);
 	}
 
 	// rmb clicked testings

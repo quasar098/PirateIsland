@@ -16,7 +16,6 @@ def message_received(client, server, message):
 		else:
 			data["clients"][client["id"]] = loads(message)
 			server.send_message(client, dumps(data));
-			sleep(0.1);
 	except Exception as error:
 		print(error)
 		data["clients"].pop(client["id"])
