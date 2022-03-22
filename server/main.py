@@ -1,18 +1,24 @@
 from websocket_server import WebsocketServer
 from json import dumps, loads
+from time import sleep
 # https://github.com/Pithikos/python-websocket-server
+
+data = {"clients": {}}
 
 def new_client(client, server):
 	print(f"new connection!")
 
 def message_received(client, server, message):
+	global data
 	try:
 		if message == "SERVER-CHECK":
 			server.send_message(client, "SERVER-VALID")
 		else:
-			data = loads(data)
-	except Exception:
-		print("what is this stuff man" + message)
+			data["clients"][client["id"]] = loads(message)
+			sleep(0.01);
+			server.send_message(client, dumps(data));
+	except Exception as error:
+		print(error)
 
 def lost_client(client, server):
 	print(f"a client has disconnected")

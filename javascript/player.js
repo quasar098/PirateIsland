@@ -109,6 +109,10 @@ export class Player {
         }
     }
 
+    get position() {
+        return [this.x, this.y];
+    }
+
     jump(event) {
 		if (event == undefined || jumpKeys.includes(event.code)) {
         function dashDirection() {

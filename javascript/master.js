@@ -108,3 +108,25 @@ function leftClick() {
 document.addEventListener("click", (event) => {
 	leftClick();
 });
+
+// server stuff
+let conn = new WebSocket("ws://" + connIp + ":" + connPort);
+let serverData;
+
+function sendServerData(websock) {
+	websock.send(JSON.stringify(
+		{"position": localPlayer.position}
+	)); // TODO: actually send something useful
+}
+
+conn.onopen = (() => {
+	sendServerData(conn);
+});
+conn.onmessage = ((m) => {
+	serverData = JSON.parse(m.data);
+	console.log(serverData);
+	sendServerData(conn);
+});
+conn.onerror = (() => {
+	conn.close();
+});

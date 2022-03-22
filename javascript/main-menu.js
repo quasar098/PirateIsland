@@ -2,8 +2,11 @@ const ipBox = document.getElementById("ip-box");
 const portBox = document.getElementById('port-box');
 const joinButton = document.getElementById('play-button');
 
+const errorMessageBox = document.getElementById('error');
+
 function showUserTheError(errorMessage) {
-    // TODO: do this
+    errorMessageBox.style.display = "block";
+    errorMessageBox.innerHTML = errorMessage;
 }
 
 function serverIsValid(ip, port) {
@@ -16,6 +19,7 @@ function serverIsValid(ip, port) {
         connection.onmessage = ((m) => {
             connection.close();
             if (m.data == "SERVER-VALID") {
+                showUserTheError("connecting to server...");
                 window.location.replace('./index.html');
             } else {
                 showUserTheError("server is online, but is not a pirate island server!");
@@ -23,7 +27,7 @@ function serverIsValid(ip, port) {
         });
         connection.onerror = (() => {
             connection.close();
-            showUserTheError("what the hell just happened??");
+            showUserTheError("failed contacting server");
         })
     }
 }
@@ -31,7 +35,7 @@ function serverIsValid(ip, port) {
 joinButton.addEventListener("click", () => {
     if (ipBox.value != "" && portBox.value != "") {
         localStorage.setItem("connect-ip", ipBox.value);
-        localStorage.setItem("port-ip", ipBox.value);
+        localStorage.setItem("connect-port", portBox.value);
         serverIsValid(ipBox.value, portBox.value)
     }
 });

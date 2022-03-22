@@ -64,3 +64,7 @@ main {
 	justify-content: center;
 	align-items: center;
 }
+h3 {
+	font-family: Helvetica;
+	font-size: 36px;
+}
