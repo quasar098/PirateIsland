@@ -160,7 +160,7 @@ export class Player {
 		}
     }
 
-    draw(hitboxes, dontjustdraw=true) {
+    draw(hitboxes, dontjustdraw=true, isself=false) {
         if (dontjustdraw) {
             this.framessincegrounded += 1;
             this.images.frame += Math.abs(this.dx*this.anim_speed);
@@ -198,6 +198,13 @@ export class Player {
             image(this.image, 0, 0);
         }
         pop();
+        textSize(18);
+        textAlign(CENTER, BOTTOM);
+        if (!isself) {
+            text(this.username, this.rect.midtop[0], this.rect.midtop[1]);
+        } else {
+            text(this.username + " (You)", this.rect.midtop[0], this.rect.midtop[1]);
+        }
         if (dontjustdraw) {
             if (!this.dashing) {
                 this.dy += this.gravity;
