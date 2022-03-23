@@ -67,14 +67,12 @@ export class Player {
         this.dash_timer = 0;
         this.anim_speed = 0.04;
         this.dust_particles = [];
-
-        // load up the images
         let image_states = {
             "idle": ["idle.png"],
             "jump": ["jump.png"],
             "fall": ["fall.png"],
             "run": ["run0.png", "run1.png", "run2.png", "run3.png", "run4.png"]
-        }
+        };
         let images;
         for (var state in image_states) {
             images = [];
@@ -101,7 +99,20 @@ export class Player {
         return new Rectangle(this.x, this.y, 100, 60);
     }
 
+    get attackHitbox() {
+        if (this.facing_right) {
+            return new Rectangle(this.hitbox.x+this.hitbox.w, this.hitbox.y-20, 70, this.hitbox.h+40)
+        } else {
+            return new Rectangle(this.hitbox.x-70, this.hitbox.y-20, 70, this.hitbox.h+40)
+        }
+    }
+
+    get position() {
+        return [this.x, this.y];
+    }
+
     jump(event) {
+		if (event == undefined || jumpKeys.includes(event.code)) {
         function dashDirection() {
             let direction = [0, 0];
             for (var upKey in upKeys) {
@@ -131,7 +142,6 @@ export class Player {
             return direction;
         }
 
-        if (jumpKeys.includes(event.code)) {
     		if (this.grounded) {
     			this.dy = -this.jump_height;
                 this.dust_particles.push(new DustParticle(this.rect.midbottom, "jump"));
@@ -146,36 +156,38 @@ export class Player {
                     }
                 }
             }
-    	}
+		}
     }
 
-    draw(hitboxes) {
-        this.framessincegrounded += 1;
-        this.images.frame += Math.abs(this.dx*this.anim_speed);
-        this.dash_timer -= 1;
-        if (!this.dashing) {
-            if (this.dx > this.max_speed) {
-                this.dx = this.max_speed;
-            } else if (this.dx < -this.max_speed) {
-                this.dx = -this.max_speed;
+    draw(hitboxes, dontjustdraw=true) {
+        if (dontjustdraw) {
+            this.framessincegrounded += 1;
+            this.images.frame += Math.abs(this.dx*this.anim_speed);
+            this.dash_timer -= 1;
+            if (!this.dashing) {
+                if (this.dx > this.max_speed) {
+                    this.dx = this.max_speed;
+                } else if (this.dx < -this.max_speed) {
+                    this.dx = -this.max_speed;
+                }
             }
-        }
 
-        // draw dust particles
-        if (this.images.state == "run") {
-            if (Math.abs(this.dx) == this.max_speed) {
+            // draw dust particles
+            if (this.images.state == "run") {
+                if (Math.abs(this.dx) == this.max_speed) {
+                }
             }
-        }
-        var deadlist = []
-        for (var particle in this.dust_particles) {
-            if (this.dust_particles[particle].draw()) {
-                deadlist.push(this.dust_particles[particle]);
+            var deadlist = []
+            for (var particle in this.dust_particles) {
+                if (this.dust_particles[particle].draw()) {
+                    deadlist.push(this.dust_particles[particle]);
+                }
             }
+            this.dust_particles = this.dust_particles.filter((value, index, arr) => {
+                return !deadlist.includes(value);
+            });
+            this.move(this.dx, this.dy, hitboxes);
         }
-        this.dust_particles = this.dust_particles.filter((value, index, arr) => {
-            return !deadlist.includes(value);
-        });
-
         push();
         translate(this.x, this.y);
         if (!this.facing_right) {
@@ -188,7 +200,6 @@ export class Player {
         if (!this.dashing) {
             this.dy += this.gravity;
         }
-        this.move(this.dx, this.dy, hitboxes);
         for (var hitbox in hitboxes) {
             hitbox = hitboxes[hitbox];
         }

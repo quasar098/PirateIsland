@@ -14,6 +14,9 @@ export class Rectangle {
     get y2() {
         return this.y+this.h;
     }
+    draw() {
+        rect(this.x, this.y, this.w, this.h);
+    }
     get midbottom() {
         return [this.x+this.w/2, this.y+this.h];
     }
