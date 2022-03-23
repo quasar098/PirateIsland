@@ -89,6 +89,7 @@ export class Player {
         this.max_dashes = 1;
         this.dash_length = 0.15;
         this.dash_speed = 16;
+        this.username;
     }
 
     get dashing() {
