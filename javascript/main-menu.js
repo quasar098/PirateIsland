@@ -1,5 +1,6 @@
 const ipBox = document.getElementById("ip-box");
 const portBox = document.getElementById('port-box');
+const usernameBox = document.getElementById('username-box');
 const joinButton = document.getElementById('play-button');
 
 const errorMessageBox = document.getElementById('error');
@@ -37,8 +38,12 @@ joinButton.addEventListener("click", () => {
         if (ipBox.value == "") {
             ipBox.value = "127.0.0.1";
         }
+        if (usernameBox.value == "") {
+            usernameBox.value = "Player #" + Math.round(Math.random()*1000);
+        }
         localStorage.setItem("connect-ip", ipBox.value);
         localStorage.setItem("connect-port", portBox.value);
-        serverIsValid(ipBox.value, portBox.value)
+        localStorage.setItem("username", usernameBox.value);
+        serverIsValid(ipBox.value, portBox.value); // TODO: no duplicate names
     }
 });

@@ -9,6 +9,7 @@ let connIp = "";
 let connPort = 19293;
 let currRMB = false;
 let prevRMB = false;
+let username = "NaN"
 
 // prevent right click menu
 document.body.addEventListener("contextmenu", (e) => {
@@ -21,11 +22,13 @@ if (localStorage.getItem("connect-ip") == null) {
 	connIp = localStorage.getItem("connect-ip");
 	connPort = parseInt(localStorage.getItem("connect-port"));
 	localStorage.removeItem("connect-ip");
+	username = localStorage.getItem("username");
 }
 
 function preload() {
 	player.preloadplayerjs();
 	localPlayer = new player.Player(200, 200);
+	localPlayer.username = username;
 
 	// ground
 	world.push(new Tile(1, 6, 1));
@@ -107,7 +110,7 @@ window.preload = preload;
 window.keyPressed = keyPressed;
 
 function leftClick() {
-	console.log("todo add left clicks be attack (or pressing m/c would work too)");
+	console.log("todo add left clicks be attack (or pressing m key or c key would work too)");
 }
 
 document.addEventListener("click", (event) => {
@@ -126,7 +129,8 @@ function sendServerData(websock) {
 			"position": localPlayer.position,
 			"frame": localPlayer.images.frame,
 			"state": localPlayer.images.state,
-			"facing-right": localPlayer.facing_right,
+			"facing_right": localPlayer.facing_right*1,
+			"username": username
 		}
 	));
 }
@@ -141,6 +145,7 @@ conn.onmessage = ((m) => {
 		playerObject.x = serverPlayerInfo.position[0];
 		playerObject.y = serverPlayerInfo.position[1];
 		playerObject.facing_right = serverPlayerInfo.facing_right;
+		playerObject.username = serverPlayerInfo.username;
 	}
 	serverData = (JSON.parse(m.data)).clients;
 	for (let playerId in serverData) {
@@ -148,11 +153,13 @@ conn.onmessage = ((m) => {
 		if (allPlayers.hasOwnProperty(playerId)) { // just updating player object
 			setPlayerInfo(allPlayers[playerId], playerData);
 		} else {
-			allPlayers[playerId] = new player.Player(0, 0);
-			setPlayerInfo(allPlayers[playerId], playerData); // can rework this area
+			if (playerData.username != username) {
+				allPlayers[playerId] = new player.Player(0, 0);
+				setPlayerInfo(allPlayers[playerId], playerData); // can rework this area
+			}
 		}
-	}
-	console.log(allPlayers);
+	} // TODO: REMOVE OLD PLAYERS IF THEY ARE NOT IN PLATER DATA THINGY BYE
+
 	sendServerData(conn);
 });
 conn.onerror = (() => {
