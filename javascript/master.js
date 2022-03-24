@@ -93,6 +93,7 @@ function draw() {
 }
 function keyPressed(e) {
 	localPlayer.jump(e);
+	localPlayer.attack(e);
 }
 function worldRectangles() {
 	let rects = [];
@@ -110,7 +111,7 @@ window.preload = preload;
 window.keyPressed = keyPressed;
 
 function leftClick() {
-	console.log("todo add left clicks be attack (or pressing m key or c key would work too)");
+	localPlayer.attack();
 }
 
 document.addEventListener("click", (event) => {

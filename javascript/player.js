@@ -4,9 +4,18 @@ const rightKeys = [39, 68];
 const leftKeys = [37, 65];
 const upKeys = [38, 87];
 const downKeys = [40, 83];
+const attackKeys = [77, 67];
 
 const jumpKeys = ["Space"];
 let dust_images = new Map();
+let slice_images = [];
+let sword_offsets = {
+    "fall": [[67, 33, 0]],
+    "idle": [[67, 42, 0]],
+    "jump": [[63, 37, 270]],
+    "run": [[68, 36, 0], [68, 36, 0], [66, 40, 0], [62, 40, 0], [62, 40, 0]]
+};
+let sword_image;
 
 export function preloadplayerjs() {
     function ldi(..._) {
@@ -16,8 +25,17 @@ export function preloadplayerjs() {
         });
         return stuff;
     }
+    function ldi_slice(..._) {
+        var stuff = [];
+        _.forEach((imgload, count) => {
+            stuff.push(loadImage("./javascript/images/slice/slice" + imgload + ".png"));
+        });
+        return stuff;
+    }
+    slice_images = ldi_slice("0", "1", "2", "3", "4", "5", "6", "7");
     dust_images.set("jump", ldi("jump_1.png", "jump_2.png", "jump_3.png", "jump_4.png", "jump_5.png"));
     dust_images.set("land", ldi("land_1.png", "land_2.png", "land_3.png", "land_4.png", "land_5.png"));
+    sword_image = loadImage("./javascript/images/knife.png");
 }
 
 class DustParticle {
@@ -67,6 +85,7 @@ export class Player {
         this.dash_timer = 0;
         this.anim_speed = 0.04;
         this.dust_particles = [];
+        this.slice = undefined;
         let image_states = {
             "idle": ["idle.png"],
             "jump": ["jump.png"],
@@ -207,6 +226,25 @@ export class Player {
             text(this.username + " (You)", this.rect.midtop[0], this.rect.midtop[1]);
         }
         fill(0, 0, 0);
+
+        // slice animation
+        if (this.slicing) {
+            push();
+            translate(this.hitbox.x+this.hitbox.w, this.hitbox.y)
+            if (!this.facing_right) {
+                scale(-1.5, 1.5);
+                image(slice_images[this.slice], 26, -9);
+            } else {
+                scale(1.5, 1.5);
+                image(slice_images[this.slice], 0, -9);
+            }
+            pop();
+            this.slice += 1;
+            if (this.slice > 7) {
+                this.slice = undefined;
+            }
+        }
+
         if (dontjustdraw) {
             if (!this.dashing) {
                 this.dy += this.gravity;
@@ -270,6 +308,14 @@ export class Player {
     get grounded() {
         return (this.framessincegrounded == 0);
     }
+    attack(event) {
+        if (event == undefined || attackKeys.includes(event.keyCode)) {
+            if (!this.slicing) {
+                this.slice = 0;
+                this.dash_timer = 0;
+            }
+        }
+    }
     move(dx, dy, hitboxes) {
         let rect;
 
@@ -313,6 +359,9 @@ export class Player {
     }
     get hitbox() {
         return new Rectangle(this.rect.x+30, this.rect.y, 40, this.rect.h);
+    }
+    get slicing() {
+        return (this.slice != undefined);
     }
     get image() {  // same as @property (getter) in python
         let state = this.images.state + "";
