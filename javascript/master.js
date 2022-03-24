@@ -74,13 +74,13 @@ function draw() {
 	scale(0.75, 0.75); // camera zoom
 
 	// real drawing
-	localPlayer.draw(worldRectangles());
 	for (var _ in world) {
 		world[_].draw(localPlayer);
 	}
 	for (var otherPlayer in allPlayers) {
 		allPlayers[otherPlayer].draw([], false);
 	}
+	localPlayer.draw(worldRectangles(), true, true);
 
 	// rmb clicked testings
 	{
@@ -158,7 +158,9 @@ conn.onmessage = ((m) => {
 				setPlayerInfo(allPlayers[playerId], playerData); // can rework this area
 			}
 		}
-	} // TODO: REMOVE OLD PLAYERS IF THEY ARE NOT IN PLATER DATA THINGY BYE
+	}
+	// for each in allplayers if player is not in serverdataclients
+	allPlayers = Object.fromEntries(Object.entries(allPlayers).filter(([pId, player]) => serverData.hasOwnProperty(pId)));
 
 	sendServerData(conn);
 });

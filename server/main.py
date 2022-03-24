@@ -15,7 +15,8 @@ def message_received(client, server, message):
 			server.send_message(client, "SERVER-VALID")
 		else:
 			data["clients"][client["id"]] = loads(message)
-			server.send_message(client, dumps(data));
+			dumps(data)
+			server.send_message(client, dumps(data))
 	except Exception as error:
 		print(error)
 		if client["id"] in data["clients"]:
