@@ -203,8 +203,10 @@ export class Player {
         if (!isself) {
             text(this.username, this.rect.midtop[0], this.rect.midtop[1]);
         } else {
+            fill(255, 0, 0);
             text(this.username + " (You)", this.rect.midtop[0], this.rect.midtop[1]);
         }
+        fill(0, 0, 0);
         if (dontjustdraw) {
             if (!this.dashing) {
                 this.dy += this.gravity;
