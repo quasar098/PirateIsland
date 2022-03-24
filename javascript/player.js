@@ -210,11 +210,25 @@ export class Player {
         }
         push();
         translate(this.x, this.y);
+        if (this.images.state != "run") {
+            this.images.frame = 0;
+        }
+        else {
+            if (this.images.frame > 5) {
+                this.images.frame = 0;
+            }
+        }
+        let sword_location = sword_offsets[this.images.state][int(this.images.frame)]
+        if (sword_location == undefined) {
+            sword_location = [-4000, 4000];
+        }
         if (!this.facing_right) {
             scale(-1, 1);
             image(this.image, -100, 0);
+            image(sword_image, sword_location[0]-100, sword_location[1]);
         } else {
             image(this.image, 0, 0);
+            image(sword_image, sword_location[0], sword_location[1]);
         }
         pop();
         textSize(18);
