@@ -11,8 +11,12 @@ def new_client(client, server):
 def message_received(client, server, message):
 	global data
 	try:
-		if message == "SERVER-CHECK":
-			server.send_message(client, "SERVER-VALID")
+		if message[0] == "!":
+			print([user["username"] for (id, user) in data["clients"].items()])
+			if message[1:] not in [user["username"] for (id, user) in data["clients"].items()]:
+				server.send_message(client, "SERVER-VALID")
+			else:
+				server.send_message(client, "USERNAME-TAKEN")
 		else:
 			data["clients"][client["id"]] = loads(message)
 			dumps(data)

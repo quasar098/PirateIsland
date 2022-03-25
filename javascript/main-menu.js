@@ -15,7 +15,7 @@ function serverIsValid(ip, port) {
         let connection = new WebSocket("ws://" + ip + ":" + port);
 
         connection.onopen = (() => {
-            connection.send("SERVER-CHECK");
+            connection.send("!" + usernameBox.value);
         });
         connection.onmessage = ((m) => {
             connection.close();
@@ -23,7 +23,7 @@ function serverIsValid(ip, port) {
                 showUserTheError("connecting to server...");
                 window.location.replace('./index.html');
             } else {
-                showUserTheError("server is online, but is not a pirate island server!");
+                showUserTheError("username taken!");
             }
         });
         connection.onerror = (() => {
