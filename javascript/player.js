@@ -10,10 +10,10 @@ const jumpKeys = ["Space"];
 let dust_images = new Map();
 let slice_images = [];
 let sword_offsets = {
-    "fall": [[67, 33, 0]],
-    "idle": [[67, 42, 0]],
-    "jump": [[63, 37, 270]],
-    "run": [[68, 36, 0], [68, 36, 0], [66, 40, 0], [62, 40, 0], [62, 40, 0]]
+    "fall": [[67, 33]],
+    "idle": [[67, 42]],
+    "jump": [[63, 37]],
+    "run": [[68, 36], [68, 36], [66, 40], [62, 40], [62, 40]]
 };
 let sword_image;
 
@@ -83,7 +83,7 @@ export class Player {
         this.facing_right = true;
         this.dashes_left = 0;
         this.dash_timer = 0;
-        this.anim_speed = 0.04;
+        this.anim_speed = 0.023;
         this.dust_particles = [];
         this.slice = undefined;
         let image_states = {
@@ -222,15 +222,27 @@ export class Player {
         if (sword_location == undefined) {
             sword_location = [-4000, 4000];
         }
+        let sword_rot = Math.PI/3*8;
+        if (this.slice != undefined) {
+            sword_rot = this.slice;
+        }
         if (!this.facing_right) {
             scale(-1, 1);
             image(this.image, -100, 0);
-            image(sword_image, sword_location[0]-100, sword_location[1]);
+            translate(sword_location[0]-100, sword_location[1]);
+            rotate(-Math.PI/3+sword_rot/8);
+            image(sword_image, 0, 0);
         } else {
             image(this.image, 0, 0);
-            image(sword_image, sword_location[0], sword_location[1]);
+            translate(sword_location[0], sword_location[1]);
+            if (int(sword_rot) == sword_rot) {
+                translate(8-this.slice, 8-this.slice);
+            }
+            rotate(-Math.PI/3+sword_rot/8);
+            image(sword_image, 0, 0);
         }
         pop();
+
         textSize(18);
         textAlign(CENTER, BOTTOM);
         if (!isself) {
