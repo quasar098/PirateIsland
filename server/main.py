@@ -40,11 +40,9 @@ def message_received(client, server, message):
 				"mail": willsendmail
 			}))
 			if len(willsendmail):
-				data["mail"][id] = []
-
+				sleep(0.01)
 			# for every client that exists, if any are 2000 ms late, then remove their client (sucks for 2000ms ppl i guess,,,)
 			data["clients"] = {name: client_data for (name, client_data) in data["clients"].items() if client_data["timestamp"]+2000 > millis()}
-			sleep(0.01)
 	except Exception as error:
 		print(error, "ERROR!")
 		if id in data["clients"]:

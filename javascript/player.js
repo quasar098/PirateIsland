@@ -80,6 +80,7 @@ export class Player {
         this.dx = 0;
         this.dy = 1;
         this.framessincegrounded = 0;
+		this.framessinceattacked = 0;
         this.facing_right = true;
         this.dashes_left = 0;
         this.dash_timer = 0;
@@ -131,43 +132,44 @@ export class Player {
         return [this.x, this.y];
     }
 
+	dashDirection() {
+		let direction = [0, 0];
+		for (var upKey in upKeys) {
+			if (keyIsDown(upKeys[upKey])) {
+				direction[1] -= 1;
+				break;
+			}
+		}
+		for (var downKey in downKeys) {
+			if (keyIsDown(downKeys[downKey])) {
+				direction[1] += 1;
+				break;
+			}
+		}
+		for (var rightKey in rightKeys) {
+			if (keyIsDown(rightKeys[rightKey])) {
+				direction[0] += 1;
+				break;
+			}
+		}
+		for (var leftKey in leftKeys) {
+			if (keyIsDown(leftKeys[leftKey])) {
+				direction[0] -= 1;
+				break;
+			}
+		}
+		return direction;
+	}
+
     jump(event) {
 		if (event == undefined || jumpKeys.includes(event.code)) {
-        function dashDirection() {
-            let direction = [0, 0];
-            for (var upKey in upKeys) {
-                if (keyIsDown(upKeys[upKey])) {
-                    direction[1] -= 1;
-                    break;
-                }
-            }
-            for (var downKey in downKeys) {
-                if (keyIsDown(downKeys[downKey])) {
-                    direction[1] += 1;
-                    break;
-                }
-            }
-            for (var rightKey in rightKeys) {
-                if (keyIsDown(rightKeys[rightKey])) {
-                    direction[0] += 1;
-                    break;
-                }
-            }
-            for (var leftKey in leftKeys) {
-                if (keyIsDown(leftKeys[leftKey])) {
-                    direction[0] -= 1;
-                    break;
-                }
-            }
-            return direction;
-        }
 
     		if (this.grounded) {
     			this.dy = -this.jump_height;
                 this.dust_particles.push(new DustParticle(this.rect.midbottom, "jump"));
     		} else {
                 if (this.dashes_left > 0) {
-                    let dir = dashDirection();
+                    let dir = this.dashDirection();
                     if (!(dir[0] == 0 && dir[1] == 0)) {
                         this.dashes_left -= 1;
                         this.dash_timer = 60*this.dash_length;
@@ -179,18 +181,34 @@ export class Player {
 		}
     }
 
+	reactToMail(mailInfo) {
+		if (mailInfo.type == "ATTACKED") {
+			this.framessinceattacked = 10;
+			if (mailInfo.data.goRight) {
+				this.dx = 11;
+				this.facing_right = false;
+			} else {
+				this.dx = -11;
+				this.facing_right = true;
+			}
+			this.dy = -10;
+		}
+	}
+
     draw(hitboxes, dontjustdraw=true, isself=false) {
         if (dontjustdraw) {
             this.framessincegrounded += 1;
             this.images.frame += Math.abs(this.dx*this.anim_speed);
             this.dash_timer -= 1;
-            if (!this.dashing) {
-                if (this.dx > this.max_speed) {
-                    this.dx = this.max_speed;
-                } else if (this.dx < -this.max_speed) {
-                    this.dx = -this.max_speed;
-                }
-            }
+			if (this.framessinceattacked < 0) {
+	            if (!this.dashing) {
+	                if (this.dx > this.max_speed) {
+	                    this.dx = this.max_speed;
+	                } else if (this.dx < -this.max_speed) {
+	                    this.dx = -this.max_speed;
+	                }
+	            }
+			}
 
             // draw dust particles
             if (this.images.state == "run") {
@@ -210,10 +228,10 @@ export class Player {
         }
         push();
         translate(this.x, this.y);
+		this.framessinceattacked -= 1;
         if (this.images.state != "run") {
             this.images.frame = 0;
-        }
-        else {
+        } else {
             if (this.images.frame > 5) {
                 this.images.frame = 0;
             }
@@ -294,13 +312,22 @@ export class Player {
             this.frame
 
             // change flipped
-            if (this.dx > 0) {
-                this.facing_right = true;
-            }
-            if (this.dx < 0)
-            {
-                this.facing_right = false;
-            }
+			if (!this.grounded) {
+	            if (this.dashDirection()[0]>0) {
+	                this.facing_right = true;
+	            }
+	            if (this.dashDirection()[0]<0)
+	            {
+	                this.facing_right = false;
+	            }
+			} else {
+				if (this.dx > 0) {
+					this.facing_right = true;
+				}
+				if (this.dx < 0) {
+					this.facing_right = false;
+				}
+			}
 
             if (!this.dashing) {
             // changing dx based on keys
@@ -321,13 +348,15 @@ export class Player {
                 }
 
                 // deceleration if no key pressed
-                for (var i=0; i<2; i++) {
-                    if (this.dx > 0) {
-                        this.dx -= this.deceleration;
-                    } else if (this.dx < 0) {
-                        this.dx += this.deceleration;
-                    }
-                }
+				if (this.framessinceattacked < 0) {
+	                for (var i=0; i<2; i++) {
+	                    if (this.dx > 0) {
+	                        this.dx -= this.deceleration;
+	                    } else if (this.dx < 0) {
+                        	this.dx += this.deceleration;
+                    	}
+                	}
+				}
             }
         }
     }
@@ -343,7 +372,12 @@ export class Player {
 				for (var username in allPlayers) {
 					let otherPlayer = allPlayers[username];
 					if (otherPlayer.hitbox.colliderect(this.attackHitbox)) {
-						usernamesWereHit[username] = "ATTACKED";
+						usernamesWereHit[username] = {"type": "ATTACKED", "data":
+							{
+								"goRight": (otherPlayer.rect.midtop[0]>this.rect.midtop[0])
+							},
+							"id": Math.floor(Math.random() * 10000)
+						};
 					}
 				}
 				if (Object.keys(usernamesWereHit).length >= 1) {

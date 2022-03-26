@@ -12,6 +12,7 @@ let prevRMB = false;
 let username = "NaN"
 var sendPackets = {};
 let incomingMail = [];
+let readPacketIds = [];
 let tmp;
 
 // prevent right click menu
@@ -93,7 +94,12 @@ function draw() {
 		}
 		prevRMB = (mouseButton === RIGHT & mouseIsPressed);
 	}
-	incomingMail = [];
+	for (var count in incomingMail) {
+		if (!readPacketIds.includes(incomingMail[count].id)) {
+			localPlayer.reactToMail(incomingMail[count]);
+			readPacketIds.push(incomingMail[count].id);
+		}
+	}
 }
 function keyPressed(e) {
 	localPlayer.jump(e);
@@ -163,8 +169,7 @@ conn.onmessage = ((m) => {
 		playerObject.username = serverPlayerInfo.username;
 	}
 	serverData = (JSON.parse(m.data));
-	incomingMail.push(...serverData.mail);
-	console.log(incomingMail);
+	incomingMail = serverData.mail;
 	serverData = serverData.clients;
 	for (let playerId in serverData) {
     	let playerData = serverData[playerId];
