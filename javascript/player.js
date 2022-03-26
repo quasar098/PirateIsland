@@ -328,27 +328,26 @@ export class Player {
 					this.facing_right = false;
 				}
 			}
+			if (this.framessinceattacked < 0) {
+	            if (!this.dashing) {
+	            // changing dx based on keys
+	                let willreturn = 0;
+	                for (var rKey in rightKeys) {
+	                    if (keyIsDown(rightKeys[rKey])) {
+	                        willreturn += 1;
+	                    }
+	                }
+	                for (var lKey in leftKeys) {
+	                    if (keyIsDown(leftKeys[lKey])) {
+	                        willreturn -= 1;
+	                    }
+	                }
+	                if (willreturn) {
+	                    this.dx += willreturn;
+	                    return;
+	                }
 
-            if (!this.dashing) {
-            // changing dx based on keys
-                let willreturn = 0;
-                for (var rKey in rightKeys) {
-                    if (keyIsDown(rightKeys[rKey])) {
-                        willreturn += 1;
-                    }
-                }
-                for (var lKey in leftKeys) {
-                    if (keyIsDown(leftKeys[lKey])) {
-                        willreturn -= 1;
-                    }
-                }
-                if (willreturn) {
-                    this.dx += willreturn;
-                    return;
-                }
-
-                // deceleration if no key pressed
-				if (this.framessinceattacked < 0) {
+	                // deceleration if no key pressed
 	                for (var i=0; i<2; i++) {
 	                    if (this.dx > 0) {
 	                        this.dx -= this.deceleration;
