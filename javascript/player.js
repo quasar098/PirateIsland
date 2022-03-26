@@ -48,7 +48,7 @@ class DustParticle {
     draw() {
         if (this.image != undefined) {
             if (this.type == "jump") {
-                image(this.image, this.x-16, this.y-24);
+                image(this.image, this.x-16, this.y-32);
             } else if (this.type == "land") {
                 image(this.image, this.x-50, this.y-40);
             } else {
@@ -334,13 +334,24 @@ export class Player {
     get grounded() {
         return (this.framessincegrounded == 0);
     }
-    attack(event) {
+    attack(event, allPlayers) {
         if (event == undefined || attackKeys.includes(event.keyCode)) {
             if (!this.slicing) {
+				let usernamesWereHit = {};
                 this.slice = 0;
                 this.dash_timer = 0;
+				for (var username in allPlayers) {
+					let otherPlayer = allPlayers[username];
+					if (otherPlayer.hitbox.colliderect(this.attackHitbox)) {
+						usernamesWereHit[username] = "ATTACKED";
+					}
+				}
+				if (Object.keys(usernamesWereHit).length >= 1) {
+					return usernamesWereHit;
+				}
             }
         }
+		return undefined;
     }
     move(dx, dy, hitboxes) {
         let rect;

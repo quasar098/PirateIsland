@@ -10,8 +10,9 @@ let connPort = 19293;
 let currRMB = false;
 let prevRMB = false;
 let username = "NaN"
-let sendPackets = {};
+var sendPackets = {};
 let incomingMail = [];
+let tmp;
 
 // prevent right click menu
 document.body.addEventListener("contextmenu", (e) => {
@@ -92,11 +93,14 @@ function draw() {
 		}
 		prevRMB = (mouseButton === RIGHT & mouseIsPressed);
 	}
-	text(incomingMail.toString(), 10, 10);
+	incomingMail = [];
 }
 function keyPressed(e) {
 	localPlayer.jump(e);
-	localPlayer.attack(e);
+	tmp = localPlayer.attack(e, allPlayers);
+	if (tmp) {
+		sendPackets = tmp;
+	}
 }
 function worldRectangles() {
 	let rects = [];
@@ -112,15 +116,14 @@ window.setup = setup;
 window.draw = draw;
 window.preload = preload;
 window.keyPressed = keyPressed;
+window.mouseClicked = mouseClicked;
 
-function leftClick() {
-	localPlayer.attack();
-	sendPackets = {2: 2};
+function mouseClicked() {
+	tmp = localPlayer.attack(undefined, allPlayers);
+	if (tmp) {
+		sendPackets = tmp;
+	}
 }
-
-document.addEventListener("click", (event) => {
-	leftClick();
-});
 
 // server stuff
 let conn = new WebSocket("ws://" + connIp + ":" + connPort);
@@ -136,12 +139,15 @@ function sendServerData(websock) {
 				"frame": localPlayer.images.frame,
 				"state": localPlayer.images.state,
 				"facing_right": localPlayer.facing_right*1,
-				"username": username
+				"username": username,
+				"timestamp": Date.now()
 			},
 		"mail": sendPackets
 	}
 	));
-	sendPackets = {};
+	if (Object.keys(sendPackets).length >= 1) {
+		sendPackets = {};
+	}
 }
 
 conn.onopen = (() => {
@@ -157,7 +163,8 @@ conn.onmessage = ((m) => {
 		playerObject.username = serverPlayerInfo.username;
 	}
 	serverData = (JSON.parse(m.data));
-	incomingMail = serverData.mail;
+	incomingMail.push(...serverData.mail);
+	console.log(incomingMail);
 	serverData = serverData.clients;
 	for (let playerId in serverData) {
     	let playerData = serverData[playerId];
@@ -166,7 +173,7 @@ conn.onmessage = ((m) => {
 		} else {
 			if (playerData.username != username) {
 				allPlayers[playerId] = new player.Player(0, 0);
-				setPlayerInfo(allPlayers[playerId], playerData); // can rework this area
+				setPlayerInfo(allPlayers[playerId], playerData);
 			}
 		}
 	}
@@ -177,4 +184,8 @@ conn.onmessage = ((m) => {
 });
 conn.onerror = (() => {
 	conn.close();
+	console.log("uh oh stinky");
+});
+conn.onclose = (() => {
+	console.log("server is gone");
 });
