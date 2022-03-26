@@ -3,7 +3,7 @@ from json import dumps, loads
 from time import sleep
 # https://github.com/Pithikos/python-websocket-server
 
-data = {"clients": {}}
+data = {"clients": {}, "mail": {}}
 
 def new_client(client, server):
 	print(f"new connection!")
@@ -12,15 +12,23 @@ def message_received(client, server, message):
 	global data
 	try:
 		if message[0] == "!":
-			print([user["username"] for (id, user) in data["clients"].items()])
 			if message[1:] not in [user["username"] for (id, user) in data["clients"].items()]:
 				server.send_message(client, "SERVER-VALID")
 			else:
 				server.send_message(client, "USERNAME-TAKEN")
 		else:
-			data["clients"][client["id"]] = loads(message)
-			dumps(data)
-			server.send_message(client, dumps(data))
+			loads_message = loads(message)
+			data["clients"][client["id"]] = loads_message["player-data"]
+			data["mail"][client["id"]] = data["mail"].get(client["id"], [])
+			for (dest, mail) in loads_message["mail"].items():
+				data["mail"][dest].append(mail)
+			# TODO: figure out why this breaks when packets (it is not client side)
+			willsendmail = data["mail"].get(client["id"], [])
+			server.send_message(client, dumps({
+				"clients": data["clients"],
+				"mail": data["mail"][client["id"]]
+			}))
+			data["mail"][client["id"]] = []
 	except Exception as error:
 		print(error)
 		if client["id"] in data["clients"]:

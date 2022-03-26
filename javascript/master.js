@@ -10,6 +10,8 @@ let connPort = 19293;
 let currRMB = false;
 let prevRMB = false;
 let username = "NaN"
+let sendPackets = {};
+let incomingMail = [];
 
 // prevent right click menu
 document.body.addEventListener("contextmenu", (e) => {
@@ -90,6 +92,7 @@ function draw() {
 		}
 		prevRMB = (mouseButton === RIGHT & mouseIsPressed);
 	}
+	text(incomingMail.toString(), 10, 10);
 }
 function keyPressed(e) {
 	localPlayer.jump(e);
@@ -112,6 +115,7 @@ window.keyPressed = keyPressed;
 
 function leftClick() {
 	localPlayer.attack();
+	sendPackets = {2: 2};
 }
 
 document.addEventListener("click", (event) => {
@@ -126,14 +130,18 @@ let createdPlayer;
 
 function sendServerData(websock) {
 	websock.send(JSON.stringify(
-		{
-			"position": localPlayer.position,
-			"frame": localPlayer.images.frame,
-			"state": localPlayer.images.state,
-			"facing_right": localPlayer.facing_right*1,
-			"username": username
-		}
+		{"player-data":
+			{
+				"position": localPlayer.position,
+				"frame": localPlayer.images.frame,
+				"state": localPlayer.images.state,
+				"facing_right": localPlayer.facing_right*1,
+				"username": username
+			},
+		"mail": sendPackets
+	}
 	));
+	sendPackets = {};
 }
 
 conn.onopen = (() => {
@@ -148,7 +156,9 @@ conn.onmessage = ((m) => {
 		playerObject.facing_right = serverPlayerInfo.facing_right;
 		playerObject.username = serverPlayerInfo.username;
 	}
-	serverData = (JSON.parse(m.data)).clients;
+	serverData = (JSON.parse(m.data));
+	incomingMail = serverData.mail;
+	serverData = serverData.clients;
 	for (let playerId in serverData) {
     	let playerData = serverData[playerId];
 		if (allPlayers.hasOwnProperty(playerId)) { // just updating player object
