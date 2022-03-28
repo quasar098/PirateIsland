@@ -10,6 +10,11 @@ let connPort = 19293;
 let currRMB = false;
 let prevRMB = false;
 let username = "NaN"
+var sendPackets = {};
+let incomingMail = [];
+let readPacketIds = [];
+let secondsSinceReq = 0;
+let tmp;
 
 // prevent right click menu
 document.body.addEventListener("contextmenu", (e) => {
@@ -71,7 +76,7 @@ function setup() {
 function draw() {
 	clear();
 	background(81, 187, 254);
-	scale(0.75, 0.75); // camera zoom
+	scale(0.6, 0.6); // camera zoom
 
 	// real drawing
 	for (var _ in world) {
@@ -90,9 +95,22 @@ function draw() {
 		}
 		prevRMB = (mouseButton === RIGHT & mouseIsPressed);
 	}
+	for (var count in incomingMail) {
+		if (!readPacketIds.includes(incomingMail[count].id)) {
+			localPlayer.reactToMail(incomingMail[count]);
+			readPacketIds.push(incomingMail[count].id);
+		}
+	}
+	textAlign(LEFT, TOP);
+	if (secondsSinceReq > 1) {window.location.href = "./main.html"}
+	secondsSinceReq += 1/60;
 }
 function keyPressed(e) {
 	localPlayer.jump(e);
+	tmp = localPlayer.attack(e, allPlayers);
+	if (tmp) {
+		sendPackets = tmp;
+	}
 }
 function worldRectangles() {
 	let rects = [];
@@ -108,14 +126,14 @@ window.setup = setup;
 window.draw = draw;
 window.preload = preload;
 window.keyPressed = keyPressed;
+window.mouseClicked = mouseClicked;
 
-function leftClick() {
-	console.log("todo add left clicks be attack (or pressing m key or c key would work too)");
+function mouseClicked() {
+	tmp = localPlayer.attack(undefined, allPlayers);
+	if (tmp) {
+		sendPackets = tmp;
+	}
 }
-
-document.addEventListener("click", (event) => {
-	leftClick();
-});
 
 // server stuff
 let conn = new WebSocket("ws://" + connIp + ":" + connPort);
@@ -125,14 +143,22 @@ let createdPlayer;
 
 function sendServerData(websock) {
 	websock.send(JSON.stringify(
-		{
-			"position": localPlayer.position,
-			"frame": localPlayer.images.frame,
-			"state": localPlayer.images.state,
-			"facing_right": localPlayer.facing_right*1,
-			"username": username
-		}
+		{"player-data":
+			{
+				"position": localPlayer.position,
+				"frame": localPlayer.images.frame,
+				"state": localPlayer.images.state,
+				"facing_right": localPlayer.facing_right*1,
+				"username": username,
+				"timestamp": Date.now(),
+				"slice": localPlayer.slice
+			},
+		"mail": sendPackets
+	}
 	));
+	if (Object.keys(sendPackets).length >= 1) {
+		sendPackets = {};
+	}
 }
 
 conn.onopen = (() => {
@@ -146,8 +172,11 @@ conn.onmessage = ((m) => {
 		playerObject.y = serverPlayerInfo.position[1];
 		playerObject.facing_right = serverPlayerInfo.facing_right;
 		playerObject.username = serverPlayerInfo.username;
+		playerObject.slice = serverPlayerInfo.slice;
 	}
-	serverData = (JSON.parse(m.data)).clients;
+	serverData = (JSON.parse(m.data));
+	incomingMail = serverData.mail;
+	serverData = serverData.clients;
 	for (let playerId in serverData) {
     	let playerData = serverData[playerId];
 		if (allPlayers.hasOwnProperty(playerId)) { // just updating player object
@@ -155,15 +184,21 @@ conn.onmessage = ((m) => {
 		} else {
 			if (playerData.username != username) {
 				allPlayers[playerId] = new player.Player(0, 0);
-				setPlayerInfo(allPlayers[playerId], playerData); // can rework this area
+				setPlayerInfo(allPlayers[playerId], playerData);
 			}
 		}
 	}
 	// for each in allplayers if player is not in serverdataclients
 	allPlayers = Object.fromEntries(Object.entries(allPlayers).filter(([pId, player]) => serverData.hasOwnProperty(pId)));
 
+	secondsSinceReq = 0;
 	sendServerData(conn);
 });
 conn.onerror = (() => {
 	conn.close();
+	console.log("uh oh stinky");
+	window.location.href = "./main.html";
+});
+conn.onclose = (() => {
+	console.log("server is gone");
 });
