@@ -87,6 +87,7 @@ export class Player {
         this.anim_speed = 0.023;
         this.dust_particles = [];
         this.slice = undefined;
+        this.username;
         let image_states = {
             "idle": ["idle.png"],
             "jump": ["jump.png"],
@@ -109,7 +110,6 @@ export class Player {
         this.max_dashes = 1;
         this.dash_length = 0.15;
         this.dash_speed = 16;
-        this.username;
     }
 
     get dashing() {

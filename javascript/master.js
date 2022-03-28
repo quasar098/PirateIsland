@@ -75,7 +75,7 @@ function setup() {
 function draw() {
 	clear();
 	background(81, 187, 254);
-	scale(0.75, 0.75); // camera zoom
+	scale(0.6, 0.6); // camera zoom
 
 	// real drawing
 	for (var _ in world) {
