@@ -150,7 +150,8 @@ function sendServerData(websock) {
 				"state": localPlayer.images.state,
 				"facing_right": localPlayer.facing_right*1,
 				"username": username,
-				"timestamp": Date.now()
+				"timestamp": Date.now(),
+				"slice": localPlayer.slice
 			},
 		"mail": sendPackets
 	}
@@ -171,6 +172,7 @@ conn.onmessage = ((m) => {
 		playerObject.y = serverPlayerInfo.position[1];
 		playerObject.facing_right = serverPlayerInfo.facing_right;
 		playerObject.username = serverPlayerInfo.username;
+		playerObject.slice = serverPlayerInfo.slice;
 	}
 	serverData = (JSON.parse(m.data));
 	incomingMail = serverData.mail;
