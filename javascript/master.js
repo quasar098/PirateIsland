@@ -71,7 +71,7 @@ function preload() {
 function setup() {
 	createCanvas(1200, 600);
 	frameRate(framerate);
-	window.localPlayer = localPlayer;
+	window.localPlayer = localPlayer; // for debuging
 }
 
 function draw() {
