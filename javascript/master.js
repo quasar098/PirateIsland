@@ -13,6 +13,7 @@ let username = "NaN"
 var sendPackets = {};
 let incomingMail = [];
 let readPacketIds = [];
+let secondsSinceReq = 0;
 let tmp;
 
 // prevent right click menu
@@ -100,6 +101,9 @@ function draw() {
 			readPacketIds.push(incomingMail[count].id);
 		}
 	}
+	textAlign(LEFT, TOP);
+	if (secondsSinceReq > 1) {window.location.href = "./main.html"}
+	secondsSinceReq += 1/60;
 }
 function keyPressed(e) {
 	localPlayer.jump(e);
@@ -185,11 +189,13 @@ conn.onmessage = ((m) => {
 	// for each in allplayers if player is not in serverdataclients
 	allPlayers = Object.fromEntries(Object.entries(allPlayers).filter(([pId, player]) => serverData.hasOwnProperty(pId)));
 
+	secondsSinceReq = 0;
 	sendServerData(conn);
 });
 conn.onerror = (() => {
 	conn.close();
 	console.log("uh oh stinky");
+	window.location.href = "./main.html";
 });
 conn.onclose = (() => {
 	console.log("server is gone");
