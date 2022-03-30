@@ -21,7 +21,7 @@ function serverIsValid(ip, port) {
             connection.close();
             if (m.data == "SERVER-VALID") {
                 showUserTheError("connecting to server...");
-                window.location.replace('./lobbies.html');
+                window.location.replace('./index.html');
             } else {
                 showUserTheError("username taken!");
             }
