@@ -3,7 +3,8 @@ from json import dumps, loads
 from time import sleep, time as time_
 # https://github.com/Pithikos/python-websocket-server
 
-data = {"clients": {}, "mail": {}}
+data = {"clients": {}, "mail": {}, "world": [[2, 3, 2], [1, 3, 1], [3, 3, 3]]}
+username_database = {}
 
 
 def millis():
@@ -23,6 +24,7 @@ def message_received(client, server, message):
 			if message[1:] not in [user["username"] for (id, user) in data["clients"].items()]:
 				server.send_message(client, "SERVER-VALID")
 				print(f"{message[1:]} has joined")
+				username_database[client["id"]+1] = message[1:]
 			else:
 				server.send_message(client, "USERNAME-TAKEN")
 		else:
@@ -37,18 +39,18 @@ def message_received(client, server, message):
 			willsendmail = data["mail"].get(id, [])
 			server.send_message(client, dumps({
 				"clients": data["clients"],
-				"mail": willsendmail
-			}))
-			# for every client that exists, if any are 2000 ms late, then remove their client (sucks for 2000ms ppl i guess,,,)
-			# todo: change this to not be dict comprehension so we can remove the packets if a player relogs
-			data["clients"] = {name: client_data for (name, client_data) in data["clients"].items() if client_data["timestamp"]+2000 > millis()}
+				"mail": willsendmail,
+				"world": data["world"]
+			}));
 	except Exception as error:
 		print(error, "ERROR!")
 		if id in data["clients"]:
 			data["clients"].pop(id)
 
 def lost_client(client, server):
-	pass
+	if username_database.get(client["id"], 0) in data["clients"]:
+		data["clients"].pop(username_database[client["id"]])
+		print(username_database[client["id"]], "has disconnected")
 
 server = WebsocketServer(host='127.0.0.1', port=19293)
 print(f"starting the server with ip {server.host} and port {server.port}")

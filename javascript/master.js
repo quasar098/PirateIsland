@@ -15,6 +15,7 @@ let incomingMail = [];
 let readPacketIds = [];
 let secondsSinceReq = 0;
 let tmp;
+const disconnectHeader = document.getElementById('disconnected');
 
 // prevent right click menu
 document.body.addEventListener("contextmenu", (e) => {
@@ -34,38 +35,6 @@ function preload() {
 	player.preloadplayerjs();
 	localPlayer = new player.Player(200, 200);
 	localPlayer.username = username;
-
-	// ground
-	world.push(new Tile(1, 6, 1));
-	world.push(new Tile(2, 6, 2));
-	world.push(new Tile(3, 6, 2));
-	world.push(new Tile(4, 6, 2));
-	world.push(new Tile(5, 6, 2));
-	world.push(new Tile(6, 6, 2));
-	world.push(new Tile(7, 6, 2));
-	world.push(new Tile(8, 6, 2));
-	world.push(new Tile(9, 6, 2));
-	world.push(new Tile(10, 6, 2));
-	world.push(new Tile(11, 6, 2));
-	world.push(new Tile(12, 6, 2));
-	world.push(new Tile(13, 6, 2));
-	world.push(new Tile(14, 6, 3));
-
-	// ground part 2
-	world.push(new Tile(1, 7, 4));
-	world.push(new Tile(2, 7, 5));
-	world.push(new Tile(3, 7, 5));
-	world.push(new Tile(4, 7, 5));
-	world.push(new Tile(5, 7, 5));
-	world.push(new Tile(6, 7, 5));
-	world.push(new Tile(7, 7, 5));
-	world.push(new Tile(8, 7, 5));
-	world.push(new Tile(9, 7, 5));
-	world.push(new Tile(10, 7, 5));
-	world.push(new Tile(11, 7, 5));
-	world.push(new Tile(12, 7, 5));
-	world.push(new Tile(13, 7, 5));
-	world.push(new Tile(14, 7, 6));
 }
 
 function setup() {
@@ -103,7 +72,13 @@ function draw() {
 		}
 	}
 	textAlign(LEFT, TOP);
-	if (secondsSinceReq > 1) {window.location.href = "./main.html"}
+	if (secondsSinceReq > 0.5) {
+		disconnectHeader.style.display = "block";
+		disconnectHeader.style.position = "fixed";
+		disconnectHeader.innerHTML = "you've been disconnected for " + Math.round(secondsSinceReq*10)/10 + "seconds";
+	} else {
+		disconnectHeader.style.display = "none";
+	}
 	secondsSinceReq += 1/60;
 }
 function keyPressed(e) {
@@ -177,6 +152,11 @@ conn.onmessage = ((m) => {
 	}
 	serverData = (JSON.parse(m.data));
 	incomingMail = serverData.mail;
+	if (world.length == 0) {
+		for (var index in serverData.world) {
+			world.push(new Tile(serverData.world[index][0], serverData.world[index][1], serverData.world[index][2]));
+		}
+	}
 	serverData = serverData.clients;
 	for (let playerId in serverData) {
     	let playerData = serverData[playerId];
@@ -189,6 +169,7 @@ conn.onmessage = ((m) => {
 			}
 		}
 	}
+
 	// for each in allplayers if player is not in serverdataclients
 	allPlayers = Object.fromEntries(Object.entries(allPlayers).filter(([pId, player]) => serverData.hasOwnProperty(pId)));
 
