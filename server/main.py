@@ -50,14 +50,17 @@ def message_received(client, server, message):
 					"clients": data["clients"],
 					"mail": willsendmail,
 					"world": data["world"],
-					"youInGame": True
+					"youInGame": True,
+					"broadcast": ""
 				}));
 			else:
+				broadcast = "game will start soon..."
 				server.send_message(client, dumps({
 					"clients": data["clients"],
 					"mail": [],
 					"world": data["world"],
-					"youInGame": False
+					"youInGame": False,
+					"broadcast": broadcast
 				}));
 	except Exception as error:
 		print(error, "ERROR!")

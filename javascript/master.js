@@ -16,7 +16,18 @@ let readPacketIds = [];
 let secondsSinceReq = 0;
 let youInGame = false;
 let tmp;
+let serverBroadcastGameInfo = "waiting for server...";
 const disconnectHeader = document.getElementById('disconnected');
+const gameInfoHeader = document.getElementById('game-info');
+
+function showGameInfo(m) {
+	if (m.length == 0) {
+		gameInfoHeader.style.display = "none";
+	} else {
+		gameInfoHeader.style.display = "block";
+		gameInfoHeader.innerHTML = m;
+	}
+}
 
 // prevent right click menu
 document.body.addEventListener("contextmenu", (e) => {
@@ -58,6 +69,8 @@ function draw() {
 	}
 	if (youInGame) {
 		localPlayer.draw(worldRectangles(), true, true);
+	} else {
+		showGameInfo(serverBroadcastGameInfo);
 	}
 
 	// rmb clicked testings
@@ -166,6 +179,8 @@ conn.onmessage = ((m) => {
 			world.push(new Tile(serverData.world[index][0], serverData.world[index][1], serverData.world[index][2]));
 		}
 	}
+	youInGame = serverData.youInGame;
+	serverBroadcastGameInfo = serverData.broadcast;
 	serverData = serverData.clients;
 	for (let playerId in serverData) {
     	let playerData = serverData[playerId];
@@ -181,8 +196,6 @@ conn.onmessage = ((m) => {
 
 	// remove players which are not being sent data for anymore
 	allPlayers = Object.fromEntries(Object.entries(allPlayers).filter(([pId, player]) => serverData.hasOwnProperty(pId)));
-
-	youInGame = serverData.youInGame;
 
 	secondsSinceReq = 0;
 	sendServerData(conn);
