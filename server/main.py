@@ -3,9 +3,11 @@ from json import dumps, loads
 from time import sleep, time as time_
 # https://github.com/Pithikos/python-websocket-server
 
-data = {"clients": {}, "mail": {}, "world": [[2, 3, 2], [1, 3, 1], [3, 3, 3]]}
-username_database = {}
-
+data = {"clients": {}, "mail": {}, "world": [
+	[2, 3, 2], [1, 3, 1], [3, 3, 3], [1, 4, 7], [2, 4, 8], [3, 4, 9]
+]};
+username_database = {};
+game_is_going = False;
 
 def send_message_to_all(message):
 	for client in data["clients"]:
@@ -34,28 +36,40 @@ def message_received(client, server, message):
 			else:
 				server.send_message(client, "USERNAME-TAKEN")
 		else:
-			loads_message = loads(message)
-			id = username = loads_message["player-data"]["username"]
-			data["clients"][id] = loads_message["player-data"]
-			data["mail"][id] = data["mail"].get(id, [])
-			for (dest, mail) in loads_message["mail"].items():
-				if dest not in data["mail"]:
-					data["mail"][dest] = []
-				data["mail"][dest].append(mail)
-			willsendmail = data["mail"].get(id, [])
-			server.send_message(client, dumps({
-				"clients": data["clients"],
-				"mail": willsendmail,
-				"world": data["world"]
-			}));
+			if game_is_going:
+				loads_message = loads(message)
+				id = username = loads_message["player-data"]["username"]
+				data["clients"][id] = loads_message["player-data"]
+				data["mail"][id] = data["mail"].get(id, [])
+				for (dest, mail) in loads_message["mail"].items():
+					if dest not in data["mail"]:
+						data["mail"][dest] = []
+					data["mail"][dest].append(mail)
+				willsendmail = data["mail"].get(id, [])
+				server.send_message(client, dumps({
+					"clients": data["clients"],
+					"mail": willsendmail,
+					"world": data["world"],
+					"youInGame": True
+				}));
+			else:
+				server.send_message(client, dumps({
+					"clients": data["clients"],
+					"mail": [],
+					"world": data["world"],
+					"youInGame": False
+				}));
 	except Exception as error:
 		print(error, "ERROR!")
 		if id in data["clients"]:
 			data["clients"].pop(id)
 
 def lost_client(client, server):
-	if username_database.get(client["id"], 0) in data["clients"]:
-		data["clients"].pop(username_database[client["id"]])
+	if client["id"] in username_database:
+		if username_database.get(client["id"], 0) in data["clients"]:
+			data["clients"].pop(username_database[client["id"]])
+		if username_database[client["id"]] in data["mail"]:
+			data["mail"].pop(username_database[client["id"]])
 		print(username_database[client["id"]], "has disconnected")
 
 server = WebsocketServer(host='127.0.0.1', port=19293)

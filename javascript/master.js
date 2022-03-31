@@ -14,6 +14,7 @@ var sendPackets = {};
 let incomingMail = [];
 let readPacketIds = [];
 let secondsSinceReq = 0;
+let youInGame = false;
 let tmp;
 const disconnectHeader = document.getElementById('disconnected');
 
@@ -55,7 +56,9 @@ function draw() {
 	for (var otherPlayer in allPlayers) {
 		allPlayers[otherPlayer].draw([], false);
 	}
-	localPlayer.draw(worldRectangles(), true, true);
+	if (youInGame) {
+		localPlayer.draw(worldRectangles(), true, true);
+	}
 
 	// rmb clicked testings
 	{
@@ -72,10 +75,15 @@ function draw() {
 		}
 	}
 	textAlign(LEFT, TOP);
-	if (secondsSinceReq > 0.5) {
-		disconnectHeader.style.display = "block";
-		disconnectHeader.style.position = "fixed";
-		disconnectHeader.innerHTML = "you've been disconnected for " + Math.round(secondsSinceReq*10)/10 + "seconds";
+	if (secondsSinceReq > 0.4) {
+		localPlayer.x = localPlayer.lastSentPos[0];
+		localPlayer.y = localPlayer.lastSentPos[1];
+		sendServerData(conn);
+		if (secondsSinceReq > 0.5) {
+			disconnectHeader.style.display = "block";
+			disconnectHeader.style.position = "fixed";
+			disconnectHeader.innerHTML = "you've been disconnected for " + Math.round(secondsSinceReq*10)/10 + "seconds";
+		}
 	} else {
 		disconnectHeader.style.display = "none";
 	}
@@ -132,6 +140,7 @@ function sendServerData(websock) {
 		"mail": sendPackets
 	}
 	));
+	localPlayer.lastSentPos = localPlayer.position;
 	if (Object.keys(sendPackets).length >= 1) {
 		sendPackets = {};
 	}
@@ -170,8 +179,10 @@ conn.onmessage = ((m) => {
 		}
 	}
 
-	// for each in allplayers if player is not in serverdataclients
+	// remove players which are not being sent data for anymore
 	allPlayers = Object.fromEntries(Object.entries(allPlayers).filter(([pId, player]) => serverData.hasOwnProperty(pId)));
+
+	youInGame = serverData.youInGame;
 
 	secondsSinceReq = 0;
 	sendServerData(conn);
@@ -181,6 +192,11 @@ conn.onerror = (() => {
 	console.log("uh oh stinky");
 	window.location.href = "./main.html";
 });
-conn.onclose = (() => {
+conn.onclose = ((e) => {
 	console.log("server is gone");
+	try {
+		CWNCLog(e);
+	} catch {
+
+	}
 });

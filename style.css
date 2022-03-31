@@ -69,3 +69,19 @@ h3 {
 	font-family: Helvetica;
 	font-size: 36px;
 }
+h2#disconnected {
+	font-family: Helvetica;
+	font-size: 24px;
+	width: 100%;
+	text-align: center;
+	position: fixed;
+	bottom: 2px;
+}
+h2#game-info {
+	font-family: Helvetica;
+	font-size: 24px;
+	width: 100%;
+	text-align: center;
+	position: fixed;
+	top: -2px;
+}

@@ -88,6 +88,7 @@ export class Player {
         this.dust_particles = [];
         this.slice = undefined;
         this.username;
+		this.lastSentPos = [this.x, this.y];
         let image_states = {
             "idle": ["idle.png"],
             "jump": ["jump.png"],
