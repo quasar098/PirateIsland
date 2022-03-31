@@ -7,6 +7,12 @@ data = {"clients": {}, "mail": {}, "world": [[2, 3, 2], [1, 3, 1], [3, 3, 3]]}
 username_database = {}
 
 
+def send_message_to_all(message):
+	for client in data["clients"]:
+		if client not in data["mail"]:
+			data["mail"][client] = []
+		data["mail"][client].append(message)
+
 def millis():
     return round(time_() * 1000)
 
