@@ -4,10 +4,11 @@ from time import sleep, time as time_
 # https://github.com/Pithikos/python-websocket-server
 
 data = {"clients": {}, "mail": {}, "world": [
-	[2, 3, 2], [1, 3, 1], [3, 3, 3], [1, 4, 7], [2, 4, 8], [3, 4, 9]
+	[1, 6, 1], [2, 6, 2], [3, 6, 2], [4, 6, 2], [5, 6, 2], [6, 6, 2], [7, 6, 2], [8, 6, 2], [9, 6, 2], [10, 6, 2], [11, 6, 2],  [12, 6, 2], [13, 6, 2], [14, 6, 2], [15, 6, 2], [16, 6, 2], [17, 6, 2], [18, 6, 3],
+	[1, 7, 7], [2, 7, 8], [3, 7, 8], [4, 7, 8], [5, 7, 8], [6, 7, 8], [7, 7, 8], [8, 7, 8], [9, 7, 8], [10, 7, 8], [11, 7, 8], [12, 7, 8], [13, 7, 8], [14, 7, 8], [15, 7, 8], [16, 7, 8], [17, 7, 8], [18, 7, 9]
 ]};
 username_database = {};
-game_is_going = False;
+game_is_going = True;
 
 def send_message_to_all(message):
 	for client in data["clients"]:
