@@ -9,7 +9,8 @@ body {
 	background: linear-gradient(to bottom, #FFFFFF, #FAFAFA);
 }
 body.mainmenu {
-	background: linear-gradient(to top left, #809bce, #95b8d1);
+	background: none;
+	background-color: #809bce;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -47,6 +48,12 @@ h1 {
 	box-shadow: 0px 0px 2rem rgba(0, 0, 0, 0.2);
 	margin-bottom: 10px;
 }
+p {
+	font-family: Helvetica;
+	color: #000;
+	font-weight: bold;
+	padding-top: 0px;
+}
 .text {
 	font-family: Comic Sans MS;
 }
@@ -67,4 +74,24 @@ main {
 h3 {
 	font-family: Helvetica;
 	font-size: 36px;
+}
+h2 {
+	font-family: Helvetica;
+	font-size: 24px;
+}
+h2#disconnected {
+	font-family: Helvetica;
+	font-size: 24px;
+	width: 100%;
+	text-align: center;
+	position: fixed;
+	bottom: 2px;
+}
+h2#game-info {
+	font-family: Helvetica;
+	font-size: 24px;
+	width: 100%;
+	text-align: center;
+	position: fixed;
+	top: -2px;
 }

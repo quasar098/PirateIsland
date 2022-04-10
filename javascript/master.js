@@ -14,7 +14,34 @@ var sendPackets = {};
 let incomingMail = [];
 let readPacketIds = [];
 let secondsSinceReq = 0;
+let youInGame = false;
 let tmp;
+let serverBroadcastGameInfo = "waiting for server...";
+const disconnectHeader = document.getElementById('disconnected');
+const gameInfoHeader = document.getElementById('game-info');
+const configShowDiv = document.getElementById('show-config');
+
+function showGameInfo(m) {
+	if (m.length == 0) {
+		gameInfoHeader.style.display = "none";
+	} else {
+		gameInfoHeader.style.display = "block";
+		gameInfoHeader.innerHTML = m;
+	}
+}
+
+function attemptShowConfig(config) {
+	if (configShowDiv.children.length == 1) {
+		let keys = Object.keys(config);
+		let values = Object.values(config);
+		for (var cf=0;cf<keys.length;cf++) {
+			let newElm = document.createElement("p");
+			newElm.innerHTML = keys[cf].replaceAll("_", " ") + ": " + values[cf];
+			newElm.style.userSelect = "none";
+			configShowDiv.appendChild(newElm);
+		}
+	}
+}
 
 // prevent right click menu
 document.body.addEventListener("contextmenu", (e) => {
@@ -34,43 +61,12 @@ function preload() {
 	player.preloadplayerjs();
 	localPlayer = new player.Player(200, 200);
 	localPlayer.username = username;
-
-	// ground
-	world.push(new Tile(1, 6, 1));
-	world.push(new Tile(2, 6, 2));
-	world.push(new Tile(3, 6, 2));
-	world.push(new Tile(4, 6, 2));
-	world.push(new Tile(5, 6, 2));
-	world.push(new Tile(6, 6, 2));
-	world.push(new Tile(7, 6, 2));
-	world.push(new Tile(8, 6, 2));
-	world.push(new Tile(9, 6, 2));
-	world.push(new Tile(10, 6, 2));
-	world.push(new Tile(11, 6, 2));
-	world.push(new Tile(12, 6, 2));
-	world.push(new Tile(13, 6, 2));
-	world.push(new Tile(14, 6, 3));
-
-	// ground part 2
-	world.push(new Tile(1, 7, 4));
-	world.push(new Tile(2, 7, 5));
-	world.push(new Tile(3, 7, 5));
-	world.push(new Tile(4, 7, 5));
-	world.push(new Tile(5, 7, 5));
-	world.push(new Tile(6, 7, 5));
-	world.push(new Tile(7, 7, 5));
-	world.push(new Tile(8, 7, 5));
-	world.push(new Tile(9, 7, 5));
-	world.push(new Tile(10, 7, 5));
-	world.push(new Tile(11, 7, 5));
-	world.push(new Tile(12, 7, 5));
-	world.push(new Tile(13, 7, 5));
-	world.push(new Tile(14, 7, 6));
 }
 
 function setup() {
 	createCanvas(1200, 600);
 	frameRate(framerate);
+	window.localPlayer = localPlayer; // for debuging
 }
 
 function draw() {
@@ -85,7 +81,11 @@ function draw() {
 	for (var otherPlayer in allPlayers) {
 		allPlayers[otherPlayer].draw([], false);
 	}
-	localPlayer.draw(worldRectangles(), true, true);
+	if (youInGame) {
+		localPlayer.draw(worldRectangles(), true, true);
+	} else {
+		showGameInfo(serverBroadcastGameInfo);
+	}
 
 	// rmb clicked testings
 	{
@@ -102,7 +102,18 @@ function draw() {
 		}
 	}
 	textAlign(LEFT, TOP);
-	if (secondsSinceReq > 1) {window.location.href = "./main.html"}
+	if (secondsSinceReq > 0.4) {
+		localPlayer.x = localPlayer.lastSentPos[0];
+		localPlayer.y = localPlayer.lastSentPos[1];
+		sendServerData(conn);
+		if (secondsSinceReq > 0.5) {
+			disconnectHeader.style.display = "block";
+			disconnectHeader.style.position = "fixed";
+			disconnectHeader.innerHTML = "you've been disconnected for " + Math.round(secondsSinceReq*10)/10 + "seconds";
+		}
+	} else {
+		disconnectHeader.style.display = "none";
+	}
 	secondsSinceReq += 1/60;
 }
 function keyPressed(e) {
@@ -156,6 +167,7 @@ function sendServerData(websock) {
 		"mail": sendPackets
 	}
 	));
+	localPlayer.lastSentPos = localPlayer.position;
 	if (Object.keys(sendPackets).length >= 1) {
 		sendPackets = {};
 	}
@@ -175,8 +187,29 @@ conn.onmessage = ((m) => {
 		playerObject.slice = serverPlayerInfo.slice;
 	}
 	serverData = (JSON.parse(m.data));
+
+	// mail
 	incomingMail = serverData.mail;
-	serverData = serverData.clients;
+
+	// world
+	if (world.length == 0) {
+		for (var index in serverData.world) {
+			world.push(new Tile(serverData.world[index][0], serverData.world[index][1], serverData.world[index][2]));
+		}
+	}
+	// if you in game or not
+	youInGame = serverData.youInGame;
+
+	// broadcast from server
+	serverBroadcastGameInfo = serverData.broadcast;
+
+	// config
+	localPlayer.gravity = serverData.config.gravity;
+	localPlayer.max_dashes = serverData.config.max_dashes;
+	attemptShowConfig(serverData.config);
+
+	// other clients
+	serverData = serverData.clients;  // DO NOT REFERENCE SERVERDATA AFTER THIS!!
 	for (let playerId in serverData) {
     	let playerData = serverData[playerId];
 		if (allPlayers.hasOwnProperty(playerId)) { // just updating player object
@@ -188,7 +221,8 @@ conn.onmessage = ((m) => {
 			}
 		}
 	}
-	// for each in allplayers if player is not in serverdataclients
+
+	// remove players which are not being sent data for anymore
 	allPlayers = Object.fromEntries(Object.entries(allPlayers).filter(([pId, player]) => serverData.hasOwnProperty(pId)));
 
 	secondsSinceReq = 0;
@@ -199,6 +233,11 @@ conn.onerror = (() => {
 	console.log("uh oh stinky");
 	window.location.href = "./main.html";
 });
-conn.onclose = (() => {
+conn.onclose = ((e) => {
 	console.log("server is gone");
+	try {
+		CWNCLog(e);
+	} catch {
+
+	}
 });

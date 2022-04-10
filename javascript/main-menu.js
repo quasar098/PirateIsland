@@ -33,6 +33,22 @@ function serverIsValid(ip, port) {
     }
 }
 
+function isValidName(name) {
+	if (name.length < 3) {
+		return "Name must be at least 3 letters long";
+	}
+	if (name == "%server%") {
+		return "quand je tends la main j'ai peur de l'accepter";
+	}
+	if (name.includes("%")) {
+		return "no % signs";
+	}
+	if (name.includes("{")) {
+		return "no curly brackets!";
+	}
+	return "";
+}
+
 joinButton.addEventListener("click", () => {
     if (portBox.value != "") {
         if (ipBox.value == "") {
@@ -41,6 +57,10 @@ joinButton.addEventListener("click", () => {
         if (usernameBox.value == "") {
             usernameBox.value = "Player #" + Math.round(Math.random()*1000);
         }
+		if (isValidName(usernameBox.value).length > 0) {
+			showUserTheError(isValidName(name)); // probably should not use the function twice
+			return;
+		}
         localStorage.setItem("connect-ip", ipBox.value);
         localStorage.setItem("connect-port", portBox.value);
         localStorage.setItem("username", usernameBox.value);
