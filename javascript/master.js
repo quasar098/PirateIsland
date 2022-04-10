@@ -37,6 +37,7 @@ function attemptShowConfig(config) {
 		for (var cf=0;cf<keys.length;cf++) {
 			let newElm = document.createElement("p");
 			newElm.innerHTML = keys[cf].replaceAll("_", " ") + ": " + values[cf];
+			newElm.style.userSelect = "none";
 			configShowDiv.appendChild(newElm);
 		}
 	}

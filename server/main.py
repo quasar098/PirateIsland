@@ -55,6 +55,9 @@ def message_received(client, server, message):
 				for (dest, mail) in loads_message["mail"].items():
 					if dest not in data["mail"]:
 						data["mail"][dest] = []
+					if dest == "%server%":
+						# todo do this
+						continue
 					data["mail"][dest].append(mail)
 				willsendmail = data["mail"].get(id, [])
 				server.send_message(client, dumps({
