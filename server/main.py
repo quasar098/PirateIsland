@@ -1,7 +1,17 @@
 from websocket_server import WebsocketServer
+# https://github.com/Pithikos/python-websocket-server
 from json import dumps, loads
 from time import sleep, time as time_
-# https://github.com/Pithikos/python-websocket-server
+
+# config
+config = {"max_dashes": 1, "gravity": 0.75}
+try:
+	with open("config.json", 'r') as f:
+		config = loads(f.read())
+except Exception as e:
+	print("config file not found! creating one for you...")
+	with open("config.json", 'w') as f:
+		f.write(dumps(config))
 
 data = {"clients": {}, "mail": {}, "world": [
 	[1, 6, 1], [2, 6, 2], [3, 6, 2], [4, 6, 2], [5, 6, 2], [6, 6, 2], [7, 6, 2], [8, 6, 2], [9, 6, 2], [10, 6, 2], [11, 6, 2],  [12, 6, 2], [13, 6, 2], [14, 6, 2], [15, 6, 2], [16, 6, 2], [17, 6, 2], [18, 6, 3],
@@ -52,7 +62,8 @@ def message_received(client, server, message):
 					"mail": willsendmail,
 					"world": data["world"],
 					"youInGame": True,
-					"broadcast": ""
+					"broadcast": "todo do broadcast",
+					"config": config
 				}));
 			else:
 				broadcast = "game will start soon..."

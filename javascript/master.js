@@ -19,6 +19,7 @@ let tmp;
 let serverBroadcastGameInfo = "waiting for server...";
 const disconnectHeader = document.getElementById('disconnected');
 const gameInfoHeader = document.getElementById('game-info');
+const configShowDiv = document.getElementById('show-config');
 
 function showGameInfo(m) {
 	if (m.length == 0) {
@@ -26,6 +27,18 @@ function showGameInfo(m) {
 	} else {
 		gameInfoHeader.style.display = "block";
 		gameInfoHeader.innerHTML = m;
+	}
+}
+
+function attemptShowConfig(config) {
+	if (configShowDiv.children.length == 1) {
+		let keys = Object.keys(config);
+		let values = Object.values(config);
+		for (var cf=0;cf<keys.length;cf++) {
+			let newElm = document.createElement("p");
+			newElm.innerHTML = keys[cf].replaceAll("_", " ") + ": " + values[cf];
+			configShowDiv.appendChild(newElm);
+		}
 	}
 }
 
@@ -173,15 +186,29 @@ conn.onmessage = ((m) => {
 		playerObject.slice = serverPlayerInfo.slice;
 	}
 	serverData = (JSON.parse(m.data));
+
+	// mail
 	incomingMail = serverData.mail;
+
+	// world
 	if (world.length == 0) {
 		for (var index in serverData.world) {
 			world.push(new Tile(serverData.world[index][0], serverData.world[index][1], serverData.world[index][2]));
 		}
 	}
+	// if you in game or not
 	youInGame = serverData.youInGame;
+
+	// broadcast from server
 	serverBroadcastGameInfo = serverData.broadcast;
-	serverData = serverData.clients;
+
+	// config
+	localPlayer.gravity = serverData.config.gravity;
+	localPlayer.max_dashes = serverData.config.max_dashes;
+	attemptShowConfig(serverData.config);
+
+	// other clients
+	serverData = serverData.clients;  // DO NOT REFERENCE SERVERDATA AFTER THIS!!
 	for (let playerId in serverData) {
     	let playerData = serverData[playerId];
 		if (allPlayers.hasOwnProperty(playerId)) { // just updating player object
