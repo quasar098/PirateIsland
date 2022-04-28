@@ -2,6 +2,4 @@
 /.idea/**
 /PirateIsland.iml
 /prototype/__pycache__/*
-cert.pem
-key.pem
 .gitignore

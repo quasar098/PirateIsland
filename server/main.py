@@ -90,7 +90,7 @@ def lost_client(client, server):
 			data["mail"].pop(username_database[client["id"]])
 		print(username_database[client["id"]], "has disconnected")
 
-server = WebsocketServer(host='127.0.0.1', port=19293, key="key.pem", cert="cert.pem")
+server = WebsocketServer(host='127.0.0.1', port=19293)
 print(f"starting the server with ip {server.host} and port {server.port}")
 
 server.set_fn_new_client(new_client)
