@@ -3,8 +3,6 @@ from websocket_server import WebsocketServer
 from json import dumps, loads
 from time import sleep, time as time_
 
-# this is server file
-
 # config
 config = {"max_dashes": 1, "gravity": 0.75}
 try:
