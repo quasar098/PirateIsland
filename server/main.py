@@ -83,14 +83,14 @@ def message_received(client, server, message):
 			data["clients"].pop(id)
 
 def lost_client(client, server):
-	if client["id"] in username_database:
+	if client["id"] in username_database:  # todo fix this NOW FGIXME
 		if username_database.get(client["id"], 0) in data["clients"]:
 			data["clients"].pop(username_database[client["id"]])
 		if username_database[client["id"]] in data["mail"]:
 			data["mail"].pop(username_database[client["id"]])
 		print(username_database[client["id"]], "has disconnected")
 
-server = WebsocketServer(host='127.0.0.1', port=19293)
+server = WebsocketServer(host='127.0.0.1', port=19293, key="key.pem", cert="cert.pem")
 print(f"starting the server with ip {server.host} and port {server.port}")
 
 server.set_fn_new_client(new_client)
