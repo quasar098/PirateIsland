@@ -12,7 +12,7 @@ function showUserTheError(errorMessage) {
 
 function serverIsValid(ip, port) {
     {
-        let connection = new WebSocket("ws://" + ip + ":" + port);
+        let connection = new WebSocket("wss://" + ip + ":" + port);
 
         connection.onopen = (() => {
             connection.send("!" + usernameBox.value);
